@@ -15,6 +15,14 @@
 	</properties>
 
 	<dependencies>
+		
+		<!-- EPSM, installed to local repository -->	
+		<dependency>
+			<groupId>com.epsm.electricPowerSystemModel</groupId>
+			<artifactId>epsm</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
 		<!-- Logback -->	
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
