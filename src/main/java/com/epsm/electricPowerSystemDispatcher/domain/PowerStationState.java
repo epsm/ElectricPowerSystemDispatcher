@@ -1,4 +1,4 @@
-package com.epsm.electricPowerSystemDispatcher.domains;
+package com.epsm.electricPowerSystemDispatcher.domain;
 
 import java.time.LocalTime;
 import java.util.Set;
@@ -22,7 +22,7 @@ public class PowerStationState{
 	@Column(name="station_id")
 	private long id;
 	
-	@Column(name="number", unique=true)
+	@Column(name="number")
 	private int powerStationNumber;
 	
 	@Column(name="frequency")
@@ -31,9 +31,8 @@ public class PowerStationState{
 	@Column(name="timestamp")
 	private LocalTime timeStamp;
 	
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL) 
-	@JoinColumn(name="station_number", referencedColumnName="number")
-	private Set<GeneratorState> generatorsStates;
+	
+	//private Set<GeneratorState> generatorsStates;
 
 	public long getId() {
 		return id;
@@ -63,11 +62,11 @@ public class PowerStationState{
 		this.timeStamp = timeStamp;
 	}
 
-	public Set<GeneratorState> getGeneratorsStates() {
+	/*public Set<GeneratorState> getGeneratorsStates() {
 		return generatorsStates;
 	}
 
 	public void setGeneratorsStates(Set<GeneratorState> generatorsStates) {
 		this.generatorsStates = generatorsStates;
-	}
+	}*/
 }

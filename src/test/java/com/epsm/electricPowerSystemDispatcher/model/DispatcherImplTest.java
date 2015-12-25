@@ -44,4 +44,14 @@ public class DispatcherImplTest {
 	public void dispatcherRejectRegistrationIfConsumerAlreadyRegistered(){
 		
 	}
+	
+	@Test
+	public void exceptionIfAcceptedStateFromNotRegisteredConsumer(){
+		
+	}
+	
+	@Test
+	public void exceptionIfAcceptedStateFromNotRegisteredPowerStation(){
+		
+	}
 }

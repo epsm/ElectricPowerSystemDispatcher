@@ -8,7 +8,7 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import com.epsm.electricPowerSystemDispatcher.domains.GeneratorState;
+import com.epsm.electricPowerSystemDispatcher.domain.GeneratorState;
 
 @Repository
 public class GeneratorStateDaoImpl implements GeneratorStateDao{
@@ -18,10 +18,9 @@ public class GeneratorStateDaoImpl implements GeneratorStateDao{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<GeneratorState> getStates(int powerStationNumber) {
-		Query query = em.createQuery("SELECT c FROM GeneratorStates c WHERE c.station_number = "
-				+ ":powerStationNumber");
-		query.setParameter("powerStationNumber", powerStationNumber);
+	public List<GeneratorState> getStatesByPowerStationNumber(int powerStationNumber) {
+		Query query = em.createQuery("SELECT c FROM GeneratorState c WHERE c.station = :number");
+		query.setParameter("number", powerStationNumber);
 		
 		return (List<GeneratorState>)query.getResultList();
 	}

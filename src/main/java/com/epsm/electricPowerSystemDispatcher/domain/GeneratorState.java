@@ -1,4 +1,4 @@
-package com.epsm.electricPowerSystemDispatcher.domains;
+package com.epsm.electricPowerSystemDispatcher.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,15 +8,18 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "GeneratorStates")
+@Table(name="generator_state")
 public class GeneratorState{
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="generator_id")
+	@Column(name="state_id")
 	private long id;
 	
-	@Column(name="number", unique=true)
+	@Column(name="station")
+	private  int station;
+	
+	@Column(name="number")
 	private  int generatorNumber;
 	
 	@Column(name="generation")
@@ -24,6 +27,14 @@ public class GeneratorState{
 
 	public long getId() {
 		return id;
+	}
+
+	public int getStationNumber() {
+		return station;
+	}
+
+	public void setStationNumber(int stationNumber) {
+		this.station = stationNumber;
 	}
 
 	public int getGeneratorNumber() {

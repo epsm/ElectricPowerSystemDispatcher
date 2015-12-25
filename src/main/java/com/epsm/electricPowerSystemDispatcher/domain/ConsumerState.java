@@ -1,4 +1,4 @@
-package com.epsm.electricPowerSystemDispatcher.domains;
+package com.epsm.electricPowerSystemDispatcher.domain;
 
 import java.time.LocalTime;
 

@@ -1,0 +1,5 @@
+<dataset>
+	<generator_state state_id="101" station="1" number="1" generation="100"/>
+	<generator_state state_id="102" station="2" number="1" generation="100"/>
+	<generator_state state_id="103" station="2" number="2" generation="100"/>
+</dataset>
