@@ -26,6 +26,9 @@ public class GeneratorState{
 	
 	@Column(name="generation")
 	private float generationInWM;
+	
+	@Column(name="frequency")
+	private float frequency;
 
 	@Column(name="timestamp")
 	private LocalTime timeStamp;
@@ -33,7 +36,7 @@ public class GeneratorState{
 	public long getId() {
 		return id;
 	}
-	
+
 	public int getStation() {
 		return station;
 	}
@@ -56,6 +59,14 @@ public class GeneratorState{
 
 	public void setGenerationInWM(float generationInWM) {
 		this.generationInWM = generationInWM;
+	}
+
+	public float getFrequency() {
+		return frequency;
+	}
+
+	public void setFrequency(float frequency) {
+		this.frequency = frequency;
 	}
 
 	public LocalTime getTimeStamp() {
