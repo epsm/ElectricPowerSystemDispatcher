@@ -22,20 +22,20 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 @TestExecutionListeners({DbUnitTestExecutionListener.class, TransactionalTestExecutionListener.class,
 		DependencyInjectionTestExecutionListener.class,	DirtiesContextTestExecutionListener.class,})
 @Transactional
-@DatabaseSetup(value="generator_states.xml", type= DatabaseOperation.REFRESH)
-public class GeneratorStateDaoImplTest{
+@DatabaseSetup(value="consumer_states.xml", type= DatabaseOperation.REFRESH)
+public class ConsumerStateDaoImplTest{
 	
 	@Autowired
-	GeneratorStateDao dao;
+	ConsumerStateDao dao;
 	
 	@Test
 	public void testGetStatesByPowerStationNumber(){
-		int statesForFistStation = dao.getStatesByPowerStationNumber(1).size();
-		int statesForSecondStation = dao.getStatesByPowerStationNumber(2).size();
-		int thirdForSecondStation = dao.getStatesByPowerStationNumber(3).size();
+		int statesForFistConsumer = dao.getStatesByNumber(1).size();
+		int statesForSecondConsumer = dao.getStatesByNumber(2).size();
+		int thirdForSecondConsumer = dao.getStatesByNumber(3).size();
 		
-		Assert.assertEquals(1, statesForFistStation);
-		Assert.assertEquals(2, statesForSecondStation);
-		Assert.assertEquals(0, thirdForSecondStation);
+		Assert.assertEquals(1, statesForFistConsumer);
+		Assert.assertEquals(2, statesForSecondConsumer);
+		Assert.assertEquals(0, thirdForSecondConsumer);
 	}
 }

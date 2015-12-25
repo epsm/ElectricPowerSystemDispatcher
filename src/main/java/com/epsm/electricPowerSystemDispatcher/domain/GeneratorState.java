@@ -1,5 +1,7 @@
 package com.epsm.electricPowerSystemDispatcher.domain;
 
+import java.time.LocalTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,36 +15,39 @@ public class GeneratorState{
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="state_id")
+	@Column(name="id")
 	private long id;
 	
 	@Column(name="station")
 	private  int station;
 	
 	@Column(name="number")
-	private  int generatorNumber;
+	private  int number;
 	
 	@Column(name="generation")
 	private float generationInWM;
 
+	@Column(name="timestamp")
+	private LocalTime timeStamp;
+
 	public long getId() {
 		return id;
 	}
-
-	public int getStationNumber() {
+	
+	public int getStation() {
 		return station;
 	}
 
-	public void setStationNumber(int stationNumber) {
-		this.station = stationNumber;
+	public void setStation(int station) {
+		this.station = station;
 	}
 
-	public int getGeneratorNumber() {
-		return generatorNumber;
+	public int getNumber() {
+		return number;
 	}
 
-	public void setGeneratorNumber(int generatorNumber) {
-		this.generatorNumber = generatorNumber;
+	public void setNumber(int number) {
+		this.number = number;
 	}
 
 	public float getGenerationInWM() {
@@ -52,4 +57,13 @@ public class GeneratorState{
 	public void setGenerationInWM(float generationInWM) {
 		this.generationInWM = generationInWM;
 	}
+
+	public LocalTime getTimeStamp() {
+		return timeStamp;
+	}
+
+	public void setTimeStamp(LocalTime timeStamp) {
+		this.timeStamp = timeStamp;
+	}
 }
+
