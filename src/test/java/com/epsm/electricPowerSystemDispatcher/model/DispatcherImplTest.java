@@ -1,42 +1,47 @@
-package test.java.com.epsm.electricPowerSystemDispatcher.model;
+package com.epsm.electricPowerSystemDispatcher.model;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
-import main.java.com.epsm.electricPowerSystemDispatcher.model.DispatcherImpl;
-import main.java.com.epsm.electricPowerSystemModel.model.control.DefaultConfigurator;
-import main.java.com.epsm.electricPowerSystemModel.model.control.SimulationRunner;
-import main.java.com.epsm.electricPowerSystemModel.model.dispatch.Dispatcher;
-import main.java.com.epsm.electricPowerSystemModel.model.generalModel.ElectricPowerSystemSimulation;
-import main.java.com.epsm.electricPowerSystemModel.model.generalModel.ElectricPowerSystemSimulationImpl;
+import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationGenerationSchedule;
 
 public class DispatcherImplTest {
-	private Dispatcher dispatcher;
-	private SimulationRunner runner;
-	
+	private DispatcherStub dispatcher;
+	private ArgumentCaptor<PowerStationGenerationSchedule> stateCaptor;
 	
 	@Before
 	public void initialize(){
-		ElectricPowerSystemSimulation system = new ElectricPowerSystemSimulationImpl();
-		DefaultConfigurator configurator = new DefaultConfigurator();
-		dispatcher = new DispatcherImpl();
-		runner = new SimulationRunner();
-		
-		configurator.initialize(system, dispatcher);		
+		dispatcher = new DispatcherStub();
+		stateCaptor = ArgumentCaptor.forClass(PowerStationGenerationSchedule.class);
 	}
 	
 	@Test
-	public void dispatcherSendsPreparedScheduleToPowerStation(){
+	public void dispatcherSendsNotNullScheduleToPowerStation(){
 		
 	}
 	
 	@Test
-	public void dispatcherGetsDataFromDispatcheredObjects(){
+	public void dispatcherRegisteresPowerStations(){
 		
 	}
 	
 	@Test
-	public void dispatcherSavesReceivedDataToDao(){
+	public void dispatcherRegisteresConsumers(){
+		
+	}
+	
+	@Test
+	public void dispatcherRejectRegistrationIfPowerStateAlreadyRegistered(){
+		
+	}
+	
+	@Test
+	public void dispatcherRejectRegistrationIfConsumerAlreadyRegistered(){
 		
 	}
 }
