@@ -1,5 +1,5 @@
 <dataset>
-	<consumer_state id="101" load="10" number="1" timestamp="00-00-00"/>
-	<consumer_state id="102" load="20" number="2" timestamp="00-00-00"/>
-	<consumer_state id="103" load="23" number="2" timestamp="00-00-00"/>
+	<consumer_state id="101" load="10" consumer_number="1" timestamp="00-00-00"/>
+	<consumer_state id="102" load="20" consumer_number="2" timestamp="00-00-00"/>
+	<consumer_state id="103" load="23" consumer_number="2" timestamp="00-00-00"/>
 </dataset>

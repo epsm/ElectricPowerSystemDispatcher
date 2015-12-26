@@ -8,7 +8,7 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import com.epsm.electricPowerSystemDispatcher.domain.ConsumerState;
+import com.epsm.electricPowerSystemDispatcher.model.domain.ConsumerState;
 
 @Repository
 public class ConsumerStateDaoImpl implements ConsumerStateDao{
@@ -19,8 +19,9 @@ public class ConsumerStateDaoImpl implements ConsumerStateDao{
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<ConsumerState> getStatesByNumber(int consumerNumber) {
-		Query query = em.createQuery("SELECT c FROM ConsumerState c WHERE c.number = :number");
-		query.setParameter("number", consumerNumber);
+		Query query = em.createQuery("SELECT c FROM ConsumerState c WHERE c.consumerNumber "
+				+ "= :consumerNumber");
+		query.setParameter("consumerNumber", consumerNumber);
 		
 		return (List<ConsumerState>)query.getResultList();
 	}

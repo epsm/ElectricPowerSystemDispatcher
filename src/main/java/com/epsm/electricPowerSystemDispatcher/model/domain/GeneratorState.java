@@ -1,4 +1,4 @@
-package com.epsm.electricPowerSystemDispatcher.domain;
+package com.epsm.electricPowerSystemDispatcher.model.domain;
 
 import java.time.LocalTime;
 
@@ -21,8 +21,8 @@ public class GeneratorState{
 	@Column(name="station")
 	private  int station;
 	
-	@Column(name="number")
-	private  int number;
+	@Column(name="generator_number")
+	private  int generatorNumber;
 	
 	@Column(name="generation")
 	private float generationInWM;
@@ -37,7 +37,7 @@ public class GeneratorState{
 		return id;
 	}
 
-	public int getStation() {
+	public int getStationNumber() {
 		return station;
 	}
 
@@ -45,12 +45,12 @@ public class GeneratorState{
 		this.station = station;
 	}
 
-	public int getNumber() {
-		return number;
+	public int getGeneratorNumber() {
+		return generatorNumber;
 	}
 
-	public void setNumber(int number) {
-		this.number = number;
+	public void setGeneratorNumber(int number) {
+		this.generatorNumber = number;
 	}
 
 	public float getGenerationInWM() {

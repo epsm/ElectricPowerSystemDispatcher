@@ -1,4 +1,4 @@
-package com.epsm.electricPowerSystemDispatcher.domain;
+package com.epsm.electricPowerSystemDispatcher.model.domain;
 
 import java.time.LocalTime;
 
@@ -17,8 +17,8 @@ public class ConsumerState{
 	@Column(name="id")
 	private long id;
 	
-	@Column(name="number")
-	private int number;
+	@Column(name="consumer_number")
+	private int consumerNumber;
 	
 	@Column(name="load")
 	private float load;
@@ -26,12 +26,12 @@ public class ConsumerState{
 	@Column(name="timestamp")
 	private LocalTime timeStamp;
 
-	public int getNumber() {
-		return number;
+	public int getConsumerNumber() {
+		return consumerNumber;
 	}
 
 	public void setNumber(int number) {
-		this.number = number;
+		this.consumerNumber = number;
 	}
 
 	public float getLoad() {

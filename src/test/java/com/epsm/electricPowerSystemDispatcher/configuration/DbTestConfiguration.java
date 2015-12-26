@@ -36,7 +36,7 @@ public class DbTestConfiguration extends WebMvcConfigurerAdapter {
         properties.put("hibernate.hbm2ddl.auto", "create");
         factory.setJpaVendorAdapter(adaptor);
         factory.setDataSource(dataSource());
-        factory.setPackagesToScan("com.epsm.electricPowerSystemDispatcher.domain");
+        factory.setPackagesToScan("com.epsm.electricPowerSystemDispatcher.model.domain");
         factory.setJpaProperties(properties);
         factory.afterPropertiesSet();
 
