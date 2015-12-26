@@ -7,8 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.epsm.electricPowerSystemDispatcher.model.domain.ConsumerState;
-import com.epsm.electricPowerSystemDispatcher.service.ConsumerService;
-import com.epsm.electricPowerSystemDispatcher.service.PowerStationService;
+import com.epsm.electricPowerSystemDispatcher.service.DispatcherService;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationGenerationSchedule;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationParameters;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationState;
@@ -23,10 +22,7 @@ public class DispatcherStub{
 	private Logger logger = LoggerFactory.getLogger(DispatcherStub.class);
 	
 	@Autowired
-	private PowerStationService powerStationService;
-	
-	@Autowired
-	private ConsumerService consumerService;
+	private DispatcherService service;
 	
 	public void registerPowerStation(PowerStationParameters parameters){
 		int powerStationNumber = parameters.getPowerStationNumber();
@@ -42,12 +38,12 @@ public class DispatcherStub{
 	}
 	
 	private void sendConfirmationToPowerStation(int powerStationNumber){
-		powerStationService.sendConfirmationToPowerStation(powerStationNumber);
+		service.sendConfirmationToPowerStation(powerStationNumber);
 	}
 	
 	private void startSendingScheduleToPowerStation(int powerStationNumber){
-		ScheduleSender sender = new ScheduleSender(this, powerStationNumber);
-		sender.startSending();
+		ScheduleSendingTimer timer = new ScheduleSendingTimer(this, powerStationNumber);
+		timer.turnOn();
 	}
 	
 	public void registerConsumer(int consumerNumber){
@@ -61,24 +57,24 @@ public class DispatcherStub{
 	}
 	
 	private void sendConfirmationToConsumer(int consumerNumber){
-		consumerService.sendConfirmationToConsumer(consumerNumber);
+		service.sendConfirmationToConsumer(consumerNumber);
 	}
 	
 	public void sendGenerationScheduleToPowerStation(int powerStationNumber){
-		prepareSchedule();
-		powerStationService.sendGenerationScheduleToPowerStation(powerStationNumber, schedule);
+		prepareSchedule(powerStationNumber);
+		service.sendGenerationScheduleToPowerStation(powerStationNumber, schedule);
 		logger.info("Schedule was sended to power station №{}.", powerStationNumber);
 	}
 	
-	private void prepareSchedule(){
-		schedule = calculator.getSchedule();
+	private void prepareSchedule(int powerStationNumber){
+		schedule = calculator.getSchedule(powerStationNumber);
 	}
 	
 	public void acceptPowerStationState(PowerStationState state){
 		int powerStationNumber = state.getPowerStationNumber();
 		
 		if(isPowerStationRegistered(powerStationNumber)){
-			powerStationService.saveState(state);
+			service.savePowerStationState(state);
 		}else{
 			logger.info("Unregister power station №{} tried to send it's state", powerStationNumber);
 		}
@@ -92,7 +88,7 @@ public class DispatcherStub{
 		int consumerNumber = state.getConsumerNumber();
 		
 		if(isConsumerRegistered(consumerNumber)){
-			consumerService.saveState(state);
+			service.saveConsumerState(state);
 		}else{
 			logger.info("Unregister consumer №{} tried to send it's state", consumerNumber);
 		}

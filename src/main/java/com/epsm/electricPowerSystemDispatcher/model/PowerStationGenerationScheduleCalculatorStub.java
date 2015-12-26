@@ -6,7 +6,6 @@ import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationGenerationSc
 
 //It is just stub that returns one schedule. More complex model see in EPSM model.
 public class PowerStationGenerationScheduleCalculatorStub {
-	private final PowerStationGenerationSchedule schedule = createSchedule();
 	
 	//this values fit to default configuration in epsm DefaultConfigurator
 	private final static float[] GENERATION_BY_HOURS = new float[]{
@@ -16,17 +15,17 @@ public class PowerStationGenerationScheduleCalculatorStub {
 			77.20f,  77.20f,  77.20f,  77.20f,  77.20f,  77.20f 
 	};
 	
-	public PowerStationGenerationSchedule getSchedule(){
-		return schedule;
+	public PowerStationGenerationSchedule getSchedule(int powerStationNumber){
+		return createSchedule(powerStationNumber);
 	}
 	
-	private PowerStationGenerationSchedule createSchedule(){
+	private PowerStationGenerationSchedule createSchedule(int powerStationNumber){
 		LoadCurve generationCurve;
 		PowerStationGenerationSchedule generationSchedule;
 		GeneratorGenerationSchedule genrationSchedule_1;
 		GeneratorGenerationSchedule genrationSchedule_2;
 		
-		generationSchedule = new PowerStationGenerationSchedule();
+		generationSchedule = new PowerStationGenerationSchedule(powerStationNumber);
 		generationCurve = new LoadCurve(GENERATION_BY_HOURS);
 		genrationSchedule_1 = new GeneratorGenerationSchedule(1, true, true, null);
 		genrationSchedule_2 = new GeneratorGenerationSchedule(2, true, false, generationCurve);

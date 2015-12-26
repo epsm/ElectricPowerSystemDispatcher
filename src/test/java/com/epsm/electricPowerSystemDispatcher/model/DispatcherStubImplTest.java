@@ -16,15 +16,13 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.epsm.electricPowerSystemDispatcher.model.domain.ConsumerState;
-import com.epsm.electricPowerSystemDispatcher.service.ConsumerService;
-import com.epsm.electricPowerSystemDispatcher.service.PowerStationService;
+import com.epsm.electricPowerSystemDispatcher.service.DispatcherService;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationGenerationSchedule;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationParameters;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationState;
 
-
 @RunWith(MockitoJUnitRunner.class)
-public class DispatcherImplTest {
+public class DispatcherStubImplTest {
 	private PowerStationParameters parameters;
 	private PowerStationState powerStationState;
 	private ConsumerState consumerState;
@@ -33,10 +31,7 @@ public class DispatcherImplTest {
 	private DispatcherStub dispatcher;
 	
 	@Mock
-	private PowerStationService powerStationService;
-	
-	@Mock
-	private ConsumerService consumerService; 
+	private DispatcherService service;
 	
 	private final int POWER_STATION_NUMBER = 1;
 	private final int CONSUMER_NUMBER = 1;
@@ -56,14 +51,14 @@ public class DispatcherImplTest {
 	public void dispatcherSendsConfirmatonToPowerStationsRightAfterRegistration(){
 		dispatcher.registerPowerStation(parameters);
 		
-		verify(powerStationService, atLeastOnce()).sendConfirmationToPowerStation(POWER_STATION_NUMBER);
+		verify(service, atLeastOnce()).sendConfirmationToPowerStation(POWER_STATION_NUMBER);
 	}
 	
 	@Test
 	public void dispatcherSendsConfirmatonToConsumerRightAfterRegistration(){
 		dispatcher.registerConsumer(CONSUMER_NUMBER);
 		
-		verify(consumerService, atLeastOnce()).sendConfirmationToConsumer(CONSUMER_NUMBER);
+		verify(service, atLeastOnce()).sendConfirmationToConsumer(CONSUMER_NUMBER);
 	}
 	
 	@Test
@@ -71,14 +66,14 @@ public class DispatcherImplTest {
 		dispatcher.registerPowerStation(parameters);
 		dispatcher.acceptPowerStationState(powerStationState);
 		
-		verify(powerStationService).saveState(powerStationState);
+		verify(service).savePowerStationState(powerStationState);
 	}
 	
 	@Test
 	public void dispatcherNotSavesPowerStationStateIfStationNotRegistered(){
 		dispatcher.acceptPowerStationState(powerStationState);
 		
-		verify(powerStationService, never()).saveState(powerStationState);
+		verify(service, never()).savePowerStationState(powerStationState);
 	}
 	
 	@Test
@@ -86,14 +81,14 @@ public class DispatcherImplTest {
 		dispatcher.registerConsumer(CONSUMER_NUMBER);
 		dispatcher.acceptConsumerState(consumerState);
 		
-		verify(consumerService).saveState(consumerState);
+		verify(service).saveConsumerState(consumerState);
 	}
 	
 	@Test
 	public void dispatcherNotSavesConsumerStatesIfConsumerNotRegistered(){
 		dispatcher.acceptConsumerState(consumerState);
 		
-		verify(consumerService, never()).saveState(consumerState);
+		verify(service, never()).saveConsumerState(consumerState);
 	}
 	
 	@Test
@@ -101,7 +96,7 @@ public class DispatcherImplTest {
 		dispatcher.registerPowerStation(parameters);
 		doPause();
 		
-		verify(powerStationService, atLeastOnce()).sendGenerationScheduleToPowerStation(
+		verify(service, atLeastOnce()).sendGenerationScheduleToPowerStation(
 				eq(POWER_STATION_NUMBER), any(PowerStationGenerationSchedule.class));
 	}
 	
