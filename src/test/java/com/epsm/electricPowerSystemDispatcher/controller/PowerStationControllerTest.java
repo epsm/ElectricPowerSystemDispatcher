@@ -4,6 +4,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
+import java.time.LocalTime;
+import java.util.Collections;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,18 +16,21 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.epsm.electricPowerSystemDispatcher.model.domain.ConsumerState;
 import com.epsm.electricPowerSystemDispatcher.service.PowerObjectService;
+import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationParameters;
+import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationState;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ConsumerControllerTest {
+public class PowerStationControllerTest {
 	private MockMvc mockMvc;
+	private ObjectMapper mapper;
 	private String objectInJsonString;
+	private Object objectToSerialize;
 	
 	@InjectMocks
-	private ConsumerController controller;
+	private PowerStationController controller;
 	
 	@Mock
 	private PowerObjectService service;
@@ -32,30 +38,39 @@ public class ConsumerControllerTest {
 	@Before
 	public void initialize(){
 		mockMvc = standaloneSetup(controller).build();
+		mapper = new ObjectMapper();
+		mapper.findAndRegisterModules();
 	}
 	
 	@Test
-	public void testRegisterigConsumer() throws Exception{
-		mockMvc.perform(
-				post("/api/consumer/register/168645468"))
-				.andExpect(status().isOk());
-	}
-	
-	@Test
-	public void testAcceptConsumerState() throws Exception {
-		prepareJsonObject();
+	public void testRegisterPowerStation() throws Exception {
+		prepareParemetersAsJSONString();
 		
 		mockMvc.perform(
-				post("/api/consumer/acceptstate")
+				post("/api/powerstation/register")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectInJsonString))
 				.andExpect(status().isOk());
 	}
 	
-	private void prepareJsonObject() throws JsonProcessingException{
-		ConsumerState state = new ConsumerState();
-		ObjectMapper mapper = new ObjectMapper();
-
-		objectInJsonString = mapper.writeValueAsString(state);
+	private void prepareParemetersAsJSONString() throws JsonProcessingException{
+		objectToSerialize = new PowerStationParameters(1, Collections.emptyMap());
+		objectInJsonString = mapper.writeValueAsString(objectToSerialize);
+	}
+	
+	@Test
+	public void testAcceptPowerStationState() throws Exception {
+		prepareStateAsJSONString();
+		
+		mockMvc.perform(
+				post("/api/powerstation/acceptstate")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectInJsonString))
+				.andExpect(status().isOk());
+	}
+	
+	private void prepareStateAsJSONString() throws JsonProcessingException{
+		objectToSerialize = new PowerStationState(1, LocalTime.NOON, 50, Collections.emptySet());
+		objectInJsonString = mapper.writeValueAsString(objectToSerialize);
 	}
 }

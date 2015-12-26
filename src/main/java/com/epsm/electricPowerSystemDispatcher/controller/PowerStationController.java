@@ -9,20 +9,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.epsm.electricPowerSystemDispatcher.model.domain.ConsumerState;
 import com.epsm.electricPowerSystemDispatcher.service.PowerObjectService;
+import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationParameters;
+import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationState;
 
-@RequestMapping("/api/consumer")
-public class ConsumerController {
+@RequestMapping("/api/powerstation")
+public class PowerStationController {
 	
 	@Autowired
 	private PowerObjectService service;
 	
-	@RequestMapping(value="/register/{consumerNumber}", method = RequestMethod.POST)
-	public @ResponseBody void registerConsumer(@PathVariable("consumerNumber") int consumerNumber){
-		service.registerConsumer(consumerNumber);
+	@RequestMapping(value="/register", method = RequestMethod.POST)
+	public @ResponseBody void registerPowerStation(@RequestBody PowerStationParameters parameters){
+		service.registerPowerStation(parameters);
 	}
 	
 	@RequestMapping(value="/acceptstate", method=RequestMethod.POST)
-	public @ResponseBody void acceptConsumerState(@RequestBody ConsumerState state){
-		service.acceptConsumerState(state);
+	public @ResponseBody void acceptPowerStationState(@RequestBody PowerStationState state){
+		service.acceptPowerStationState(state);
 	}
 }
