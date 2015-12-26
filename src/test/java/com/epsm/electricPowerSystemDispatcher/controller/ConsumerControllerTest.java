@@ -13,7 +13,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.epsm.electricPowerSystemDispatcher.model.domain.ConsumerState;
+import com.epsm.electricPowerSystemDispatcher.model.domain.SavedConsumerState;
 import com.epsm.electricPowerSystemDispatcher.service.PowerObjectService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,7 +53,7 @@ public class ConsumerControllerTest {
 	}
 	
 	private void prepareJsonObject() throws JsonProcessingException{
-		ConsumerState state = new ConsumerState();
+		SavedConsumerState state = new SavedConsumerState();
 		ObjectMapper mapper = new ObjectMapper();
 
 		objectInJsonString = mapper.writeValueAsString(state);

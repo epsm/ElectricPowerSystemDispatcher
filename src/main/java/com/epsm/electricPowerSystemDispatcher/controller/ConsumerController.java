@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.epsm.electricPowerSystemDispatcher.model.domain.ConsumerState;
+import com.epsm.electricPowerSystemDispatcher.model.domain.SavedConsumerState;
 import com.epsm.electricPowerSystemDispatcher.service.PowerObjectService;
 
 @RequestMapping("/api/consumer")
@@ -22,7 +22,7 @@ public class ConsumerController {
 	}
 	
 	@RequestMapping(value="/acceptstate", method=RequestMethod.POST)
-	public @ResponseBody void acceptConsumerState(@RequestBody ConsumerState state){
+	public @ResponseBody void acceptConsumerState(@RequestBody SavedConsumerState state){
 		service.acceptConsumerState(state);
 	}
 }

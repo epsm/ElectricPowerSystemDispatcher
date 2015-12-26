@@ -5,14 +5,16 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import com.epsm.electricPowerSystemDispatcher.model.domain.ConsumerState;
+import com.epsm.electricPowerSystemDispatcher.model.domain.SavedConsumerState;
 import com.epsm.electricPowerSystemDispatcher.service.DispatcherService;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationGenerationSchedule;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationParameters;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationState;
 
 //It just a stub. It doesn't do any calculation as real dispatcher. More complex model see in EPSM model.
+@Component
 public class DispatcherStub{
 	private PowerStationGenerationScheduleCalculatorStub calculator 
 			= new PowerStationGenerationScheduleCalculatorStub();  
@@ -84,7 +86,7 @@ public class DispatcherStub{
 		return powerStations.contains(powerStationNumber);
 	}
 	
-	public void acceptConsumerState(ConsumerState state){
+	public void acceptConsumerState(SavedConsumerState state){
 		int consumerNumber = state.getConsumerNumber();
 		
 		if(isConsumerRegistered(consumerNumber)){

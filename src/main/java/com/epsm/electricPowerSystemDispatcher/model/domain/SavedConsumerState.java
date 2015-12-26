@@ -11,7 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="consumer_state")
-public class ConsumerState{
+public class SavedConsumerState{
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id")

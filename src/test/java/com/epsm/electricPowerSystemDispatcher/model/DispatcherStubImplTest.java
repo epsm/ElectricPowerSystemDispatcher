@@ -15,7 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.epsm.electricPowerSystemDispatcher.model.domain.ConsumerState;
+import com.epsm.electricPowerSystemDispatcher.model.domain.SavedConsumerState;
 import com.epsm.electricPowerSystemDispatcher.service.DispatcherService;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationGenerationSchedule;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationParameters;
@@ -25,7 +25,7 @@ import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationState;
 public class DispatcherStubImplTest {
 	private PowerStationParameters parameters;
 	private PowerStationState powerStationState;
-	private ConsumerState consumerState;
+	private SavedConsumerState consumerState;
 	
 	@InjectMocks
 	private DispatcherStub dispatcher;
@@ -40,7 +40,7 @@ public class DispatcherStubImplTest {
 	public void initialize(){
 		parameters = mock(PowerStationParameters.class);
 		powerStationState = mock(PowerStationState.class);
-		consumerState = mock(ConsumerState.class);
+		consumerState = mock(SavedConsumerState.class);
 		
 		when(parameters.getPowerStationNumber()).thenReturn(POWER_STATION_NUMBER);
 		when(powerStationState.getPowerStationNumber()).thenReturn(POWER_STATION_NUMBER);

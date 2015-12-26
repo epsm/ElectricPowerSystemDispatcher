@@ -11,7 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="generator_state")
-public class GeneratorState{
+public class SavedGeneratorState{
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -41,7 +41,7 @@ public class GeneratorState{
 		return station;
 	}
 
-	public void setStation(int station) {
+	public void setStationNumber(int station) {
 		this.station = station;
 	}
 

@@ -2,9 +2,9 @@ package com.epsm.electricPowerSystemDispatcher.repository;
 
 import java.util.List;
 
-import com.epsm.electricPowerSystemDispatcher.model.domain.ConsumerState;
+import com.epsm.electricPowerSystemDispatcher.model.domain.SavedConsumerState;
 
 public interface ConsumerStateDao {
-	public List<ConsumerState> getStatesByNumber(int consumerNumber);
-	public void saveState(ConsumerState state);
+	public List<SavedConsumerState> getStatesByNumber(int consumerNumber);
+	public void saveState(SavedConsumerState state);
 }
