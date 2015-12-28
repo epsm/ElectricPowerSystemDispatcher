@@ -10,10 +10,12 @@ import com.epsm.electricPowerSystemModel.model.generalModel.TimeServiceConsumer;
 public class MultiTimer implements TimeServiceConsumer{
 	private ConcurrentHashMap<Long, LocalDateTime> timers;
 	private TimeService timeService;
+	private int delayInSeconds;
 	
-	public MultiTimer(TimeService timeService) {
+	public MultiTimer(TimeService timeService, int delayInSeconds) {
 		timers = new ConcurrentHashMap<Long, LocalDateTime>();
 		this.timeService = timeService;
+		this.delayInSeconds = delayInSeconds;
 	}
 	
 	public void startOrUpdateDelayOnTimeNumber(long timerNumber){
@@ -46,8 +48,7 @@ public class MultiTimer implements TimeServiceConsumer{
 		LocalDateTime currentTime = timeService.getCurrentTime();
 		LocalDateTime lastSetTime = timers.get(timerNumber);
 		
-		return lastSetTime.plusSeconds(Constants.ACCEPTABLE_PAUSE_BETWEEN_RECEIVED_MESSAGES_IN_SECONDS)
-				.isBefore(currentTime);
+		return lastSetTime.plusSeconds(delayInSeconds).isBefore(currentTime);
 	}
 	
 	private void deleteTimer(long timerNumber){

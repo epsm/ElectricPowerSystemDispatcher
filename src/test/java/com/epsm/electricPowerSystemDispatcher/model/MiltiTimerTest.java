@@ -15,11 +15,12 @@ public class MiltiTimerTest {
 	private TimeService timeService; 
 	private MultiTimer multitimer;
 	private LocalDateTime startTestTime;
+	private final int TIME_DEALY = 10;
 	
 	@Before
 	public void initialize(){
 		timeService = mock(TimeService.class);
-		multitimer = new MultiTimer(timeService);
+		multitimer = new MultiTimer(timeService, TIME_DEALY);
 	
 		when(timeService.getCurrentTime()).thenReturn(LocalDateTime.of(2000, 01, 01, 00, 00));
 		startTestTime = timeService.getCurrentTime();
@@ -38,8 +39,7 @@ public class MiltiTimerTest {
 	}
 	
 	private void currentTimePlusTimeLessThenTimeout(){
-		when(timeService.getCurrentTime()).thenReturn(startTestTime.plusSeconds(
-				Constants.ACCEPTABLE_PAUSE_BETWEEN_RECEIVED_MESSAGES_IN_SECONDS - 1));
+		when(timeService.getCurrentTime()).thenReturn(startTestTime.plusSeconds(TIME_DEALY - 1));
 	}
 	
 	@Test
@@ -52,8 +52,7 @@ public class MiltiTimerTest {
 	}
 	
 	private void currentTimePlusTimeMoreThanTimeout(){
-		when(timeService.getCurrentTime()).thenReturn(startTestTime.plusSeconds(
-				Constants.ACCEPTABLE_PAUSE_BETWEEN_RECEIVED_MESSAGES_IN_SECONDS + 1));
+		when(timeService.getCurrentTime()).thenReturn(startTestTime.plusSeconds(TIME_DEALY + 1));
 	}
 	
 	@Test
