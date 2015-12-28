@@ -49,21 +49,21 @@ public class DispatcherStubImplTest {
 	
 	@Test
 	public void dispatcherSendsConfirmatonToPowerStationsRightAfterRegistration(){
-		dispatcher.registerPowerStation(parameters);
+		dispatcher.acceptPowerStationConnection(parameters);
 		
 		verify(service, atLeastOnce()).sendConfirmationToPowerStation(POWER_STATION_NUMBER);
 	}
 	
 	@Test
 	public void dispatcherSendsConfirmatonToConsumerRightAfterRegistration(){
-		dispatcher.registerConsumer(CONSUMER_NUMBER);
+		dispatcher.acceptConsumerConnection(CONSUMER_NUMBER);
 		
 		verify(service, atLeastOnce()).sendConfirmationToConsumer(CONSUMER_NUMBER);
 	}
 	
 	@Test
 	public void dispatcherSavesPowerStationStateIfStationRegistered(){
-		dispatcher.registerPowerStation(parameters);
+		dispatcher.acceptPowerStationConnection(parameters);
 		dispatcher.acceptPowerStationState(powerStationState);
 		
 		verify(service).savePowerStationState(powerStationState);
@@ -78,7 +78,7 @@ public class DispatcherStubImplTest {
 	
 	@Test
 	public void dispatcherSavesConsumerStateIfConsumernRegistered(){
-		dispatcher.registerConsumer(CONSUMER_NUMBER);
+		dispatcher.acceptConsumerConnection(CONSUMER_NUMBER);
 		dispatcher.acceptConsumerState(consumerState);
 		
 		verify(service).saveConsumerState(consumerState);
@@ -93,7 +93,7 @@ public class DispatcherStubImplTest {
 	
 	@Test
 	public void dispatcherSendingSchedulesToPowerStationAfterItsRegistration() throws InterruptedException{
-		dispatcher.registerPowerStation(parameters);
+		dispatcher.acceptPowerStationConnection(parameters);
 		doPause();
 		
 		verify(service, atLeastOnce()).sendGenerationScheduleToPowerStation(

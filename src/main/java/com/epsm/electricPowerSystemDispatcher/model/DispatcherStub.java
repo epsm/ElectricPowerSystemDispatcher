@@ -1,102 +1,103 @@
 package com.epsm.electricPowerSystemDispatcher.model;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.epsm.electricPowerSystemDispatcher.model.PowerSystemObject.Type;
 import com.epsm.electricPowerSystemDispatcher.model.domain.SavedConsumerState;
 import com.epsm.electricPowerSystemDispatcher.service.DispatcherService;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationGenerationSchedule;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationParameters;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationState;
+import com.epsm.electricPowerSystemModel.model.generalModel.GlobalConstants;
+import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
 
 //It just a stub. It doesn't do any calculation as real dispatcher. More complex model see in EPSM model.
 @Component
 public class DispatcherStub{
-	private PowerStationGenerationScheduleCalculatorStub calculator 
-			= new PowerStationGenerationScheduleCalculatorStub();  
+	private PowerStationGenerationScheduleCalculatorStub calculator; 
+	private Map<Long, PowerSystemObject> objectsWithActiveConnection;
 	private PowerStationGenerationSchedule schedule;
-	private ConcurrentSkipListSet<Integer> powerStations = new ConcurrentSkipListSet<Integer>();
-	private ConcurrentSkipListSet<Integer> consumers = new ConcurrentSkipListSet<Integer>();
-	private Logger logger = LoggerFactory.getLogger(DispatcherStub.class);
+	private TimeService timeService;
+	private LocalDateTime currentTime;
+	private Logger logger;
+	private final int ACCEPTABLE_PAUSE_BETWEEN_MESSAGES_FROM_OBJECTS_IN_SECCONDS = 10;
 	
 	@Autowired
 	private DispatcherService service;
 	
-	public void registerPowerStation(PowerStationParameters parameters){
-		int powerStationNumber = parameters.getPowerStationNumber();
+	public DispatcherStub() {
+		calculator 	= new PowerStationGenerationScheduleCalculatorStub();
+		objectsWithActiveConnection = new ConcurrentHashMap<Long, PowerSystemObject>();
+		timeService = new TimeService();
+		logger = LoggerFactory.getLogger(DispatcherStub.class);
+	}
+	
+	public void acceptPowerObjectConnection(PowerSystemObject object){
+		long objectId = object.getId();
 		
-		addPowerStation(powerStationNumber);
-		sendConfirmationToPowerStation(powerStationNumber);
-		startSendingScheduleToPowerStation(powerStationNumber);		
-		logger.info("Power station with number {} registered.", powerStationNumber);
-	}
-	
-	private void addPowerStation(int powerStationNumber){
-		powerStations.add(powerStationNumber);
-	}
-	
-	private void sendConfirmationToPowerStation(int powerStationNumber){
-		service.sendConfirmationToPowerStation(powerStationNumber);
-	}
-	
-	private void startSendingScheduleToPowerStation(int powerStationNumber){
-		ScheduleSendingTimer timer = new ScheduleSendingTimer(this, powerStationNumber);
-		timer.turnOn();
-	}
-	
-	public void registerConsumer(int consumerNumber){
-		addConsumer(consumerNumber);
-		sendConfirmationToConsumer(consumerNumber);
-		logger.info("Consumer with number {} registered.", consumerNumber);
-	}
-	
-	private void addConsumer(int consumerNumber){
-		consumers.add(consumerNumber);
-	}
-	
-	private void sendConfirmationToConsumer(int consumerNumber){
-		service.sendConfirmationToConsumer(consumerNumber);
-	}
-	
-	public void sendGenerationScheduleToPowerStation(int powerStationNumber){
-		prepareSchedule(powerStationNumber);
-		service.sendGenerationScheduleToPowerStation(powerStationNumber, schedule);
-		logger.info("Schedule was sended to power station №{}.", powerStationNumber);
-	}
-	
-	private void prepareSchedule(int powerStationNumber){
-		schedule = calculator.getSchedule(powerStationNumber);
-	}
-	
-	public void acceptPowerStationState(PowerStationState state){
-		int powerStationNumber = state.getPowerStationNumber();
-		
-		if(isPowerStationRegistered(powerStationNumber)){
-			service.savePowerStationState(state);
+		if(isConnectionWithThisPowerStationActive(objectId)){
+			refreshTimeWhenLastMessageRecievedForPowerStation(objectId);
 		}else{
-			logger.info("Unregister power station №{} tried to send it's state", powerStationNumber);
+			setConnectionWithThisPowerStationActive(powerStationNumber);
 		}
 	}
 	
-	private boolean isPowerStationRegistered(int powerStationNumber){
-		return powerStations.contains(powerStationNumber);
+	private boolean isConnectionWithThisPowerStationActive(long objectId){
+		return objectsWithActiveConnection.containsKey(objectId);
 	}
 	
-	public void acceptConsumerState(SavedConsumerState state){
-		int consumerNumber = state.getConsumerNumber();
-		
-		if(isConsumerRegistered(consumerNumber)){
-			service.saveConsumerState(state);
-		}else{
-			logger.info("Unregister consumer №{} tried to send it's state", consumerNumber);
+	private void refreshTimeWhenLastMessageRecievedForPowerStation(long objectId){
+		PowerSystemObject powerStation = objectsWithActiveConnection.get(objectId);
+		if(powerStation != null){
+			powerStation.setTimeWhenRecievedLastState(LocalDateTime.now());
 		}
 	}
 
-	private boolean isConsumerRegistered(int powerStationNumber){
-		return consumers.contains(powerStationNumber);
+	private void setConnectionWithThisPowerStationActive(int powerStationNumber){
+		PowerSystemObject powerStation = new PowerSystemObject(Type.POWERSTATION, powerStationNumber);
+		powerStation.setTimeWhenRecievedLastState(LocalDateTime.now());
+		dispatcheredObjects.put(powerStationNumber, powerStation);
 	}
+	
+	
+	
+
+	public void interactWithPowerSystemObjects(){
+		private void getCurrentTime(){
+			currentTime = timeService.getCurrentTime();
+		}
+		
+		
+	}
+	
+	private void processPowerObject(){
+		if(isConnectionWithObjectActive()){
+			sendMessageToObject();
+		}else{
+			
+		}
+	}
+	
+	private boolean isConnectionWithObjectActive()owerSystemObject object){
+		LocalDateTime timeWhenRecievedLastMessage = object.getTimeWhenRecievedLastState();
+		return timeWhenRecievedLastMessage.plusSeconds(
+				ACCEPTABLE_PAUSE_BETWEEN_MESSAGES_FROM_OBJECTS_IN_SECCONDS).isAfter(currentTime);
+	}
+	
+	private sendMessageToObject()
 }
+
+
+
+
+

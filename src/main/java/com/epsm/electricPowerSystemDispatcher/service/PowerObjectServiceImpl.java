@@ -12,19 +12,20 @@ public class PowerObjectServiceImpl {
 	@Autowired
 	private DispatcherStub dispatcher;
 	
-	void registerConsumer(int consumerNumber){
-		dispatcher.registerConsumer(consumerNumber);
+	void acceptConsumerConnection(int consumerNumber){
+		dispatcher.acceptConsumerConnection(consumerNumber);
 	}
 	
 	void acceptConsumerState(SavedConsumerState state){
 		dispatcher.acceptConsumerState(state);
 	}
 	
-	void registerPowerStation(PowerStationParameters parameters){
-		dispatcher.registerPowerStation(parameters);
+	void acceptPowerStationConnection(PowerStationParameters parameters){
+		dispatcher.acceptPowerStationConnection(parameters);
 	}
 	
 	void acceptPowerStationState(PowerStationState state){
 		dispatcher.acceptPowerStationState(state);
 	}
+	
 }
