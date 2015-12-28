@@ -45,7 +45,7 @@ public class DispatcherStubImplTest {
 	private PowerObjectService powerObjectService;
 	
 	@Mock
-	private ConnectionKeeper keeper;
+	private MultiTimer keeper;
 	
 	@Before
 	public void initialize(){
@@ -60,21 +60,20 @@ public class DispatcherStubImplTest {
 	public void establishesConnectionWithPowerStations(){
 		dispatcher.establishConnection(parameters);
 		
-		verify(keeper).addOrUpdateConnection(POWER_OBJECT_ID);
+		verify(keeper).startOrUpdateDelayOnTimeNumber(POWER_OBJECT_ID);
 	}
 	
 	@Test
 	public void acceptsAndSaveToDBMesagesFromPowerObjectIfConnectionEstablished(){
-		when(keeper.isConnectionActive(eq(POWER_OBJECT_ID))).thenReturn(true);
+		when(keeper.isTimerActive(eq(POWER_OBJECT_ID))).thenReturn(true);
 		dispatcher.acceptState(state);
 		
 		verify(powerObjectService).savePowerObjectState(state);
 	}
 	
-
 	@Test
 	public void doNothingIfAcceptedPowerStationMessageWasFromDisconnectedPowerStation(){
-		when(keeper.isConnectionActive(eq(POWER_OBJECT_ID))).thenReturn(false);
+		when(keeper.isTimerActive(eq(POWER_OBJECT_ID))).thenReturn(false);
 		dispatcher.acceptState(state);
 		
 		verify(powerObjectService, never()).savePowerObjectState(state);

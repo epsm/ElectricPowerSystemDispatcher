@@ -13,7 +13,7 @@ import com.epsm.electricPowerSystemModel.model.generalModel.TimeServiceConsumer;
 @Component
 public class DispatcherStub implements TimeServiceConsumer{
 	@Autowired
-	private ConnectionKeeper keeper;
+	private MultiTimer keeper;
 	
 	@Autowired
 	private DispatcherService dispatcherService;
@@ -24,7 +24,7 @@ public class DispatcherStub implements TimeServiceConsumer{
 	//Just a stub. Power object paramters have no effect.
 	public void establishConnection(PowerObjectParameters parameters){
 		long powerObjectId = parameters.getPowerObjectId();
-		keeper.addOrUpdateConnection(powerObjectId);
+		keeper.startOrUpdateDelayOnTimeNumber(powerObjectId);
 	}
 
 	public void acceptState(PowerObjectState state){
@@ -36,7 +36,7 @@ public class DispatcherStub implements TimeServiceConsumer{
 	}
 	
 	private boolean isConnectionWithPowerObjectActive(long powerObjectId){
-		return keeper.isConnectionActive(powerObjectId);
+		return keeper.isTimerActive(powerObjectId);
 	}
 	
 	private void savePowerObjectState(PowerObjectState state){
@@ -44,7 +44,7 @@ public class DispatcherStub implements TimeServiceConsumer{
 	}
 	
 	private void refreshLastReceivedMessageTimeWithPowerObject(long powerObjectId){
-		keeper.addOrUpdateConnection(powerObjectId);
+		keeper.startOrUpdateDelayOnTimeNumber(powerObjectId);
 	}
 
 	@Override
