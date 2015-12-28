@@ -15,61 +15,69 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.epsm.electricPowerSystemDispatcher.model.domain.SavedConsumerState;
 import com.epsm.electricPowerSystemDispatcher.service.DispatcherService;
+import com.epsm.electricPowerSystemDispatcher.service.PowerObjectService;
+import com.epsm.electricPowerSystemModel.model.dispatch.ConsumerParameters;
+import com.epsm.electricPowerSystemModel.model.dispatch.PowerObjectParameters;
+import com.epsm.electricPowerSystemModel.model.dispatch.PowerObjectState;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationGenerationSchedule;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationParameters;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationState;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DispatcherStubImplTest {
+	PowerObjectParameters parameters;
+	PowerObjectState state;
+	private final long POWER_OBJECT_ID = 7676;
 	
 	@InjectMocks
 	private DispatcherStub dispatcher;
 	
 	@Mock
-	private DispatcherService service;
+	private DispatcherService dispatcherService;
+	
+	@Mock
+	private PowerObjectService powerObjectService;
 	
 	@Mock
 	private ConnectionKeeper keeper;
 	
-	@Test
-	public void establishesConnectionWithPowerStations(){
-		dispatcher.establishConnectionWithPowerStation(1);
-		
-		verify(keeper).addOrUpdatePowerStationConnection(1);
-	}
-	
-	@Test
-	public void establishesConnectionWithConsumer(){
-		dispatcher.establishConnectionWithConsumer(2);
-		
-		verify(keeper).addOrUpdateConsumerConnection(2);
-	}
-	
-	@Test
-	public void acceptsAndSaveToDBMesagesFromPowerStationIfConnectionEstablished(){
-		dispatcher.establishConnectionWithConsumer(2);
-		dispatcher.acceptPowerStationState(null);
-		
-		verify(service).savePowerStationState(any());
-	}
-	
-	
-	@Test
-	public void doNothingIfAcceptedPowerStationMessageWasFromDisconnectedPowerStation(){
-		dispatcher.acceptPowerStationState(null);
-		
-		verify(service, never()).savePowerStationState(any());
+	@Before
+	public void initialize(){
+		parameters = mock(PowerObjectParameters.class);
+		state = mock(PowerObjectState.class);
+		when(parameters.getPowerObjectId()).thenReturn(POWER_OBJECT_ID);
+		when(state.getPowerObjectId()).thenReturn(POWER_OBJECT_ID);
 	}
 	
 	@Ignore
 	@Test
-	public void acceptsAndSaveToDBMesagesFromConsumer(){
+	public void establishesConnectionWithPowerStations(){
+		dispatcher.establishConnection(parameters);
 		
+		verify(keeper).addOrUpdateConnection(POWER_OBJECT_ID);
+	}
+	
+	@Test
+	public void acceptsAndSaveToDBMesagesFromPowerObjectIfConnectionEstablished(){
+		when(keeper.isConnectionActive(eq(POWER_OBJECT_ID))).thenReturn(true);
+		dispatcher.acceptState(state);
+		
+		verify(powerObjectService).savePowerObjectState(state);
+	}
+	
+
+	@Test
+	public void doNothingIfAcceptedPowerStationMessageWasFromDisconnectedPowerStation(){
+		when(keeper.isConnectionActive(eq(POWER_OBJECT_ID))).thenReturn(false);
+		dispatcher.acceptState(state);
+		
+		verify(powerObjectService, never()).savePowerObjectState(state);
 	}
 	
 	@Ignore
@@ -80,13 +88,13 @@ public class DispatcherStubImplTest {
 	
 	@Ignore
 	@Test
-	public void doNothingIfAcceptConsumerMessageFromDisconnectedConsumer(){
+	public void sendsNotNulMessagesToConsumersWithActiveConnectionsIfConnectionEstablished(){
 		
 	}
-	
+
 	@Ignore
 	@Test
-	public void sendsMesagesToConsumerWithActiveConnections(){
+	public void sendsNothingIfConnectionEstablishedButItIsNotTimeToSend(){
 		
 	}
 }

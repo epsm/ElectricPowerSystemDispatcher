@@ -1,33 +1,60 @@
 package com.epsm.electricPowerSystemDispatcher.model;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class ConnectionKeeper {
+import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
+import com.epsm.electricPowerSystemModel.model.generalModel.TimeServiceConsumer;
+
+public class ConnectionKeeper implements TimeServiceConsumer{
+	private ConcurrentHashMap<Long, LocalDateTime> connections;
+	private TimeService timeService;
 	
-	@Autowired
-	private ActiveConnectionContainer powerStations;
-	
-	@Autowired
-	private ActiveConnectionContainer consumers;
-	
-	public void addOrUpdatePowerStationConnection(int powerStationNumber){
-		powerStations.addOrUpdateConnection(powerStationNumber);
+	public ConnectionKeeper(TimeService timeService) {
+		connections = new ConcurrentHashMap<Long, LocalDateTime>();
+		this.timeService = timeService;
 	}
 	
-	public void addOrUpdateConsumerConnection(int consumerNumber){
-		consumers.addOrUpdateConnection(consumerNumber);
+	public void addOrUpdateConnection(long connectionNumber){
+		LocalDateTime currentTime = timeService.getCurrentTime();
+		connections.put(connectionNumber, currentTime);
 	}
 	
-	public void manageConnections(){
-		powerStations.manageConnections();
-		consumers.manageConnections();
+	public Set<Long> getActiveConnections(){
+		return connections.keySet();
+	}
+	
+	@Override
+	public void doRealTimeDependOperation() {
+		manageConnections();
+	}
+	
+	private void manageConnections(){
+		for(Long connectionNumber: connections.keySet()){
+			manageConnection(connectionNumber);
+		}
+	}
+	
+	private void manageConnection(long connectionNumber){
+		if(isConnectionOutOfTime(connectionNumber)){
+			deleteConnection(connectionNumber);
+		}
 	}
 
-	public boolean isConnectionWithPowerStationActive(int powerStationNumber) {
-		return powerStations.isConnectionActive(powerStationNumber);
+	private boolean isConnectionOutOfTime(long connectionNumber){
+		LocalDateTime currentTime = timeService.getCurrentTime();
+		LocalDateTime lastConnectionTime = connections.get(connectionNumber);
+		
+		return lastConnectionTime.plusSeconds(Constants.PAUSE_BETWEEN_SENDING_MESSAGE_IN_SECONDS)
+				.isBefore(currentTime);
 	}
 	
-	public boolean isConnectionWithConsumerActive(int consumerNumber) {
-		return consumers.isConnectionActive(consumerNumber);
+	private void deleteConnection(long connectionNumber){
+		connections.remove(connectionNumber);
+	}
+
+	public boolean isConnectionActive(long connectionNumber) {
+		return connections.containsKey(connectionNumber);
 	}
 }

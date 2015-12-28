@@ -1,61 +1,83 @@
 package com.epsm.electricPowerSystemDispatcher.model;
 
-import org.junit.Ignore;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
 
-@RunWith(MockitoJUnitRunner.class)
 public class ConnectionKeeperTest {
-
-	@InjectMocks
-	private ConnectionKeeper keeper;
+	private TimeService timeService; 
+	private ConnectionKeeper container;
+	private LocalDateTime startTestTime;
 	
-	@Mock
-	private ActiveConnectionContainer powerStations;
+	@Before
+	public void initialize(){
+		timeService = mock(TimeService.class);
+		container = new ConnectionKeeper(timeService);
 	
-	@Mock
-	private ActiveConnectionContainer consumers;
-	
-	
-	@Test
-	public void keeperInvokesAddOrUpfateMethodsOnPowerStationContainer(){
-		keeper.addOrUpdatePowerStationConnection(1);
-		
-		verify(powerStations).addOrUpdateConnection(1);
+		when(timeService.getCurrentTime()).thenReturn(LocalDateTime.of(2000, 01, 01, 00, 00));
+		startTestTime = timeService.getCurrentTime();
 	}
 	
 	@Test
-	public void keeperInvokesAddOrUpfateMethodsOnConsumerContainer(){
-		keeper.addOrUpdateConsumerConnection(1);
+	public void containerStoresConnectionsWhileTheyNotOutOfTime(){
+		container.addOrUpdateConnection(99L);
+		container.addOrUpdateConnection(202L);
+		plusTimeLessThenTimeout();
+		container.doRealTimeDependOperation();
 		
-		verify(consumers).addOrUpdateConnection(1);
+		Assert.assertTrue(container.getActiveConnections().contains(99L));
+		Assert.assertTrue(container.getActiveConnections().contains(202L));
+		Assert.assertFalse(container.getActiveConnections().contains(777L));
+	}
+	
+	private void plusTimeLessThenTimeout(){
+		when(timeService.getCurrentTime()).thenReturn(startTestTime.plusSeconds(
+				Constants.PAUSE_BETWEEN_SENDING_MESSAGE_IN_SECONDS - 1));
 	}
 	
 	@Test
-	public void keeperInvokesManageConnectionsOnBothContainers(){
-		keeper.manageConnections();
+	public void containerDeletesObjectsWhenConnectionTimeoutIsOver(){
+		container.addOrUpdateConnection(99);
+		plusTimeMoreThanTimeout();
+		container.doRealTimeDependOperation();
 		
-		verify(powerStations).manageConnections();
-		verify(consumers).manageConnections();
+		Assert.assertEquals(container.getActiveConnections().size(), 0);
+	}
+	
+	private void plusTimeMoreThanTimeout(){
+		when(timeService.getCurrentTime()).thenReturn(startTestTime.plusSeconds(
+				Constants.PAUSE_BETWEEN_SENDING_MESSAGE_IN_SECONDS + 1));
 	}
 	
 	@Test
-	public void keeperInvokesIsActiveOnPowerStationContainer(){
-		keeper.isConnectionWithPowerStationActive(1);
+	public void containerRefreshesTimeoutForStoredObjects(){
+		container.addOrUpdateConnection(99L);
+		plusTimeMoreThanTimeout();
+		container.addOrUpdateConnection(99L);
+		container.doRealTimeDependOperation();
 		
-		verify(powerStations).isConnectionActive(1);
+		Assert.assertTrue(container.getActiveConnections().contains(99L));
 	}
 	
 	@Test
-	public void keeperInvokesIsActiveOnConsumerContainer(){
-		keeper.isConnectionWithConsumerActive(1);
+	public void containerReturnsTrueIfConnectionActive(){
+		container.addOrUpdateConnection(99);
+		container.isConnectionActive(1);
 		
-		verify(consumers).isConnectionActive(1);
+		Assert.assertTrue(container.isConnectionActive(99));
+	}
+	
+	@Test
+	public void containerReturnsFalseIfConnectionNotActive(){
+		container.isConnectionActive(1);
+		
+		Assert.assertFalse(container.isConnectionActive(99));
 	}
 }
