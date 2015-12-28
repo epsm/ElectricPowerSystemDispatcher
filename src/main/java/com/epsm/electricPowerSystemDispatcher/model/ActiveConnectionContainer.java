@@ -7,25 +7,25 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
 
 public class ActiveConnectionContainer {
-	private ConcurrentHashMap<Integer, LocalDateTime> activeConnections;
+	private ConcurrentHashMap<Integer, LocalDateTime> connections;
 	private TimeService timeService;
 		
 	public ActiveConnectionContainer(TimeService timeService) {
-		activeConnections = new ConcurrentHashMap<Integer, LocalDateTime>();
+		connections = new ConcurrentHashMap<Integer, LocalDateTime>();
 		this.timeService = timeService;
 	}
 	
 	public void addOrUpdateConnection(int connectionNumber){
 		LocalDateTime currentTime = timeService.getCurrentTime();
-		activeConnections.put(connectionNumber, currentTime);
+		connections.put(connectionNumber, currentTime);
 	}
 	
 	public Set<Integer> getActiveConnections(){
-		return activeConnections.keySet();
+		return connections.keySet();
 	}
 	
 	public void manageConnections(){
-		for(Integer connectionNumber: activeConnections.keySet()){
+		for(Integer connectionNumber: connections.keySet()){
 			manageConnection(connectionNumber);
 		}
 	}
@@ -38,13 +38,17 @@ public class ActiveConnectionContainer {
 
 	private boolean isConnectionOutOfTime(int connectionNumber){
 		LocalDateTime currentTime = timeService.getCurrentTime();
-		LocalDateTime lastConnectionTime = activeConnections.get(connectionNumber);
+		LocalDateTime lastConnectionTime = connections.get(connectionNumber);
 		
 		return lastConnectionTime.plusSeconds(Constants.CONNECTION_TIMEOUT_IN_SECONDS)
 				.isBefore(currentTime);
 	}
 	
 	private void deleteConnection(int connectionNumber){
-		activeConnections.remove(connectionNumber);
+		connections.remove(connectionNumber);
+	}
+
+	public boolean isConnectionActive(int connectionNumber) {
+		return connections.containsKey(connectionNumber);
 	}
 }

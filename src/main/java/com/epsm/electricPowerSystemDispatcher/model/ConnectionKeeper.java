@@ -22,4 +22,12 @@ public class ConnectionKeeper {
 		powerStations.manageConnections();
 		consumers.manageConnections();
 	}
+
+	public boolean isConnectionWithPowerStationActive(int powerStationNumber) {
+		return powerStations.isConnectionActive(powerStationNumber);
+	}
+	
+	public boolean isConnectionWithConsumerActive(int consumerNumber) {
+		return consumers.isConnectionActive(consumerNumber);
+	}
 }

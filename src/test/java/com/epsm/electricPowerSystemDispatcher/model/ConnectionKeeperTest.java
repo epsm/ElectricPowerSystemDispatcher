@@ -24,7 +24,7 @@ public class ConnectionKeeperTest {
 	
 	
 	@Test
-	public void keeperInvokesAddOrUpfateMethodsOnPowerStationContaine(){
+	public void keeperInvokesAddOrUpfateMethodsOnPowerStationContainer(){
 		keeper.addOrUpdatePowerStationConnection(1);
 		
 		verify(powerStations).addOrUpdateConnection(1);
@@ -43,5 +43,19 @@ public class ConnectionKeeperTest {
 		
 		verify(powerStations).manageConnections();
 		verify(consumers).manageConnections();
+	}
+	
+	@Test
+	public void keeperInvokesIsActiveOnPowerStationContainer(){
+		keeper.isConnectionWithPowerStationActive(1);
+		
+		verify(powerStations).isConnectionActive(1);
+	}
+	
+	@Test
+	public void keeperInvokesIsActiveOnConsumerContainer(){
+		keeper.isConnectionWithConsumerActive(1);
+		
+		verify(consumers).isConnectionActive(1);
 	}
 }

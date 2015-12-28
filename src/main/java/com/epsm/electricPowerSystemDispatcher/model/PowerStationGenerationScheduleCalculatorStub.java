@@ -4,10 +4,8 @@ import com.epsm.electricPowerSystemModel.model.bothConsumptionAndGeneration.Load
 import com.epsm.electricPowerSystemModel.model.dispatch.GeneratorGenerationSchedule;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationGenerationSchedule;
 
-//It is just stub that returns one schedule. More complex model see in EPSM model.
+//It is just stub. More complex model see com.epsm.electricPowerSystemModel.model.*;
 public class PowerStationGenerationScheduleCalculatorStub {
-	
-	//this values fit to default configuration in epsm DefaultConfigurator
 	private final static float[] GENERATION_BY_HOURS = new float[]{
 			55.15f,  50.61f,  47.36f,  44.11f, 	41.20f,  41.52f,
 			40.87f,  48.66f,  64.89f,  77.86f,  85.00f,  84.34f,
@@ -15,6 +13,7 @@ public class PowerStationGenerationScheduleCalculatorStub {
 			77.20f,  77.20f,  77.20f,  77.20f,  77.20f,  77.20f 
 	};
 	
+	//TODO calculate schedule according to power station parameters and situations with consumers. 
 	public PowerStationGenerationSchedule getSchedule(int powerStationNumber){
 		return createSchedule(powerStationNumber);
 	}

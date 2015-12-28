@@ -26,7 +26,7 @@ public class ActiveConnectionContainerTest {
 	}
 	
 	@Test
-	public void containerStoresWhileConnectionsWhileTheyNotOutOfTime(){
+	public void containerStoresConnectionsWhileTheyNotOutOfTime(){
 		container.addOrUpdateConnection(99);
 		container.addOrUpdateConnection(202);
 		plusTimeLessThenTimeout();
@@ -64,5 +64,20 @@ public class ActiveConnectionContainerTest {
 		container.manageConnections();
 		
 		Assert.assertTrue(container.getActiveConnections().contains(99));
+	}
+	
+	@Test
+	public void containerReturnsTrueIfConnectionActive(){
+		container.addOrUpdateConnection(99);
+		container.isConnectionActive(1);
+		
+		Assert.assertTrue(container.isConnectionActive(99));
+	}
+	
+	@Test
+	public void containerReturnsFalseIfConnectionNotActive(){
+		container.isConnectionActive(1);
+		
+		Assert.assertFalse(container.isConnectionActive(99));
 	}
 }

@@ -1,26 +1,12 @@
 package com.epsm.electricPowerSystemDispatcher.model;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.epsm.electricPowerSystemDispatcher.model.domain.SavedConsumerState;
 import com.epsm.electricPowerSystemDispatcher.service.DispatcherService;
-import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationGenerationSchedule;
-import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationParameters;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationState;
-import com.epsm.electricPowerSystemModel.model.generalModel.GlobalConstants;
-import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
 
-//It just a stub. It doesn't do any calculation as real dispatcher. More complex model see in EPSM model.
+//It just a stub. More complex model see com.epsm.electricPowerSystemModel.model.*;
 @Component
 public class DispatcherStub{
 	@Autowired
@@ -28,6 +14,35 @@ public class DispatcherStub{
 	
 	@Autowired
 	private DispatcherService service;
+	
+	public void establishConnectionWithPowerStation(int powerStationNumber){
+		keeper.addOrUpdatePowerStationConnection(powerStationNumber);
+	}
+	
+	public void establishConnectionWithConsumer(int consumerNumber){
+		keeper.addOrUpdateConsumerConnection(consumerNumber);
+	}
+
+	public void acceptPowerStationState(PowerStationState state){
+		int powerStationNumber = state.getPowerStationNumber();
+		
+		if(isConnectionWithPowerStationActive(powerStationNumber)){
+			savePowerStationState(state);
+			refreshLastReceivedMessageTimeWithPowerstation(powerStationNumber);
+		}
+	}
+	
+	private boolean isConnectionWithPowerStationActive(int powerStationNumber){
+		return keeper.isConnectionWithPowerStationActive(powerStationNumber);
+	}
+	
+	private void savePowerStationState(PowerStationState state){
+		service.savePowerStationState(state);
+	}
+	
+	private void refreshLastReceivedMessageTimeWithPowerstation(int powerStationNumber){
+		keeper.addOrUpdatePowerStationConnection(powerStationNumber);
+	}
 	
 }
 
