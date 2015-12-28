@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -23,9 +24,6 @@ import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationState;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DispatcherStubImplTest {
-	private PowerStationParameters parameters;
-	private PowerStationState powerStationState;
-	private SavedConsumerState consumerState;
 	
 	@InjectMocks
 	private DispatcherStub dispatcher;
@@ -33,74 +31,27 @@ public class DispatcherStubImplTest {
 	@Mock
 	private DispatcherService service;
 	
-	private final int POWER_STATION_NUMBER = 1;
-	private final int CONSUMER_NUMBER = 1;
-	
-	@Before
-	public void initialize(){
-		parameters = mock(PowerStationParameters.class);
-		powerStationState = mock(PowerStationState.class);
-		consumerState = mock(SavedConsumerState.class);
-		
-		when(parameters.getPowerStationNumber()).thenReturn(POWER_STATION_NUMBER);
-		when(powerStationState.getPowerStationNumber()).thenReturn(POWER_STATION_NUMBER);
-		when(consumerState.getConsumerNumber()).thenReturn(CONSUMER_NUMBER);
-	}
-	
+	@Ignore
 	@Test
-	public void dispatcherSendsConfirmatonToPowerStationsRightAfterRegistration(){
-		dispatcher.acceptPowerStationConnection(parameters);
+	public void acceptsAndSaveToDBMesagesFromPowerStation(){
 		
-		verify(service, atLeastOnce()).sendConfirmationToPowerStation(POWER_STATION_NUMBER);
 	}
 	
+	@Ignore
 	@Test
-	public void dispatcherSendsConfirmatonToConsumerRightAfterRegistration(){
-		dispatcher.acceptConsumerConnection(CONSUMER_NUMBER);
+	public void acceptsAndSaveToDBMesagesFromConsumer(){
 		
-		verify(service, atLeastOnce()).sendConfirmationToConsumer(CONSUMER_NUMBER);
 	}
 	
+	@Ignore
 	@Test
-	public void dispatcherSavesPowerStationStateIfStationRegistered(){
-		dispatcher.acceptPowerStationConnection(parameters);
-		dispatcher.acceptPowerStationState(powerStationState);
+	public void sendingMesagesToPowerStationWithActiveConnections(){
 		
-		verify(service).savePowerStationState(powerStationState);
 	}
 	
+	@Ignore
 	@Test
-	public void dispatcherNotSavesPowerStationStateIfStationNotRegistered(){
-		dispatcher.acceptPowerStationState(powerStationState);
+	public void sendingMesagesToConsumerWithActiveConnections(){
 		
-		verify(service, never()).savePowerStationState(powerStationState);
-	}
-	
-	@Test
-	public void dispatcherSavesConsumerStateIfConsumernRegistered(){
-		dispatcher.acceptConsumerConnection(CONSUMER_NUMBER);
-		dispatcher.acceptConsumerState(consumerState);
-		
-		verify(service).saveConsumerState(consumerState);
-	}
-	
-	@Test
-	public void dispatcherNotSavesConsumerStatesIfConsumerNotRegistered(){
-		dispatcher.acceptConsumerState(consumerState);
-		
-		verify(service, never()).saveConsumerState(consumerState);
-	}
-	
-	@Test
-	public void dispatcherSendingSchedulesToPowerStationAfterItsRegistration() throws InterruptedException{
-		dispatcher.acceptPowerStationConnection(parameters);
-		doPause();
-		
-		verify(service, atLeastOnce()).sendGenerationScheduleToPowerStation(
-				eq(POWER_STATION_NUMBER), any(PowerStationGenerationSchedule.class));
-	}
-	
-	private void doPause() throws InterruptedException{
-		Thread.sleep(100);
 	}
 }
