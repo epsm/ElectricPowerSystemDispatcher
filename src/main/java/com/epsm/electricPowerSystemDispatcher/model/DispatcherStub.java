@@ -3,10 +3,8 @@ package com.epsm.electricPowerSystemDispatcher.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.epsm.electricPowerSystemDispatcher.service.DispatcherService;
 import com.epsm.electricPowerSystemDispatcher.service.PowerObjectService;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerObjectParameters;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerObjectState;
@@ -18,25 +16,26 @@ public class DispatcherStub implements TimeServiceConsumer{
 	private MultiTimer receivedMessagesTimer;
 	private MultiTimer sentMessagesTimer;
 	private PowerObjectService powerObjectService;
-	private MessageSender sender;
+	private PowerObjectManager manager;
+	private Set<Long> powerObjectsToSendingMessages;
 
 	public DispatcherStub(MultiTimer receivedMessagesTimer, MultiTimer sentMessagesTimer,
-			PowerObjectService powerObjectService, MessageSender sender) {
+			PowerObjectService powerObjectService, PowerObjectManager manager) {
 		super();
 		this.receivedMessagesTimer = receivedMessagesTimer;
 		this.sentMessagesTimer = sentMessagesTimer;
 		this.powerObjectService = powerObjectService;
-		this.sender = sender;
+		this.manager = manager;
 	}
 
-	//Just a stub. Power object paramters have no effect.
+	//Just a stub. Power object parameters have no effect.
 	public void establishConnection(PowerObjectParameters parameters){
-		System.out.println("est=" + parameters.getPowerObjectId());
 		long powerObjectId = parameters.getPowerObjectId();
-		refreshReceivedMessageTimerWithPowerObject(powerObjectId);
+		refreshReceivedMessageTimerForPowerObject(powerObjectId);
+		manager.rememberPowerObjectParameters(parameters);
 	}
 	
-	private void refreshReceivedMessageTimerWithPowerObject(long powerObjectId){
+	private void refreshReceivedMessageTimerForPowerObject(long powerObjectId){
 		receivedMessagesTimer.startOrUpdateDelayOnTimeNumber(powerObjectId);
 	}
 
@@ -44,7 +43,7 @@ public class DispatcherStub implements TimeServiceConsumer{
 		long powerObjectId = state.getPowerObjectId();
 		if(isConnectionWithPowerObjectActive(powerObjectId)){
 			savePowerObjectState(state);
-			refreshReceivedMessageTimerWithPowerObject(powerObjectId);
+			refreshReceivedMessageTimerForPowerObject(powerObjectId);
 		}
 	}
 	
@@ -58,36 +57,42 @@ public class DispatcherStub implements TimeServiceConsumer{
 
 	@Override
 	public void doRealTimeDependOperation() {
-		System.out.println("size before=" + receivedMessagesTimer.getActiveTimers().size());
+		receivedMessagesTimer.doRealTimeDependOperation();
+		sentMessagesTimer.doRealTimeDependOperation();
 		sendMesagesToPowerObjects();
-		System.out.println("size after=" + receivedMessagesTimer.getActiveTimers().size());
 	}
 	
 	private void sendMesagesToPowerObjects(){
-		Set<Long> powerObjectsToSendingMessages = filterPowerObjectForSendingMessages();
-		System.out.println("ac=" + receivedMessagesTimer.getActiveTimers());
-		System.out.println("app= " + powerObjectsToSendingMessages.size());
+		filterPowerObjectForSendingMessages();
+		sendMessageForAllAproropriateObjects();
+	}
+	
+	private void sendMessageForAllAproropriateObjects(){
 		for(Long powerObjectId: powerObjectsToSendingMessages){
-			System.out.println(powerObjectId);
 			if(isItTimeToSendMessageForPowerObject(powerObjectId)){
-				sendAppropriateMessageForPowerObject(powerObjectId);
+				sendMessageForPowerObject(powerObjectId);
 			}
 		}
 	}
 	
-	private Set<Long> filterPowerObjectForSendingMessages(){
-		Set<Long> activePowerObjects = new HashSet<Long>(receivedMessagesTimer.getActiveTimers());
-		Set<Long> notApropriatePowerObjects = new HashSet<Long>(sentMessagesTimer.getActiveTimers());
-		activePowerObjects.removeAll(notApropriatePowerObjects);
-		return activePowerObjects;
-	}
-
 	private boolean isItTimeToSendMessageForPowerObject(long powerObjectId){
 		return !sentMessagesTimer.isTimerActive(powerObjectId);
 	}
 	
-	private void sendAppropriateMessageForPowerObject(long powerObjectId){
-		sender.sendMessage(powerObjectId);
+	private void filterPowerObjectForSendingMessages(){
+		Set<Long> activePowerObjects = new HashSet<Long>(receivedMessagesTimer.getActiveTimers());
+		Set<Long> notApropriatePowerObjects = new HashSet<Long>(sentMessagesTimer.getActiveTimers());
+		activePowerObjects.removeAll(notApropriatePowerObjects);
+		powerObjectsToSendingMessages = activePowerObjects;
+	}
+	
+	private void sendMessageForPowerObject(long powerObjectId){
+		manager.sendMessage(powerObjectId);
+		refreshSentMessageTimerForPowerObject(powerObjectId);
+	}
+	
+	private void refreshSentMessageTimerForPowerObject(long powerObjectId){
+		sentMessagesTimer.startOrUpdateDelayOnTimeNumber(powerObjectId);
 	}
 }
 
