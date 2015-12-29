@@ -3,6 +3,8 @@ package com.epsm.electricPowerSystemDispatcher.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.epsm.electricPowerSystemDispatcher.service.PowerObjectService;
@@ -10,29 +12,31 @@ import com.epsm.electricPowerSystemModel.model.dispatch.PowerObjectParameters;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerObjectState;
 import com.epsm.electricPowerSystemModel.model.generalModel.TimeServiceConsumer;
 
-//It just a stub. More complex model see com.epsm.electricPowerSystemModel.model.*;
 @Component
-public class DispatcherStub implements TimeServiceConsumer{
+public class Dispatcher implements TimeServiceConsumer{
 	private MultiTimer receivedMessagesTimer;
 	private MultiTimer sentMessagesTimer;
 	private PowerObjectService powerObjectService;
-	private PowerObjectManager manager;
+	private PowerObjectManagerStub manager;
 	private Set<Long> powerObjectsToSendingMessages;
+	private Logger logger;
 
-	public DispatcherStub(MultiTimer receivedMessagesTimer, MultiTimer sentMessagesTimer,
-			PowerObjectService powerObjectService, PowerObjectManager manager) {
+	public Dispatcher(MultiTimer receivedMessagesTimer, MultiTimer sentMessagesTimer,
+			PowerObjectService powerObjectService, PowerObjectManagerStub manager) {
 		super();
 		this.receivedMessagesTimer = receivedMessagesTimer;
 		this.sentMessagesTimer = sentMessagesTimer;
 		this.powerObjectService = powerObjectService;
 		this.manager = manager;
+		logger = LoggerFactory.getLogger(Dispatcher.class);
 	}
 
-	//Just a stub. Power object parameters have no effect.
 	public void establishConnection(PowerObjectParameters parameters){
 		long powerObjectId = parameters.getPowerObjectId();
 		refreshReceivedMessageTimerForPowerObject(powerObjectId);
 		manager.rememberPowerObjectParameters(parameters);
+		
+		logger.info("Parameters was received: {}." + parameters);
 	}
 	
 	private void refreshReceivedMessageTimerForPowerObject(long powerObjectId){

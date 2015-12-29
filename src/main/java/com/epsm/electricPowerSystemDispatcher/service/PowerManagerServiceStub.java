@@ -1,4 +1,4 @@
 package com.epsm.electricPowerSystemDispatcher.service;
 
-public interface DispatcherService {
+public interface PowerManagerServiceStub {
 }

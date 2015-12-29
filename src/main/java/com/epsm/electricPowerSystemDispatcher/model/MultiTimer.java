@@ -1,6 +1,7 @@
 package com.epsm.electricPowerSystemDispatcher.model;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -8,7 +9,7 @@ import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
 import com.epsm.electricPowerSystemModel.model.generalModel.TimeServiceConsumer;
 
 public class MultiTimer implements TimeServiceConsumer{
-	private ConcurrentHashMap<Long, LocalDateTime> timers;
+	private Map<Long, LocalDateTime> timers;
 	private TimeService timeService;
 	private int delayInSeconds;
 	

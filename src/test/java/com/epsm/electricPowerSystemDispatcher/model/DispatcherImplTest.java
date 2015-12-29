@@ -18,15 +18,15 @@ import com.epsm.electricPowerSystemModel.model.dispatch.PowerObjectParameters;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerObjectState;
 import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
 
-public class DispatcherStubImplTest {
+public class DispatcherImplTest {
 	private PowerObjectParameters parametersForTestObject;
 	private PowerObjectState state;
 	private TimeService timeService;
 	private MultiTimer receivedMessagesTimer;
 	private MultiTimer sentMessagesTimer;
-	private PowerObjectManager manager;
+	private PowerObjectManagerStub manager;
 	private PowerObjectService powerObjectService;
-	private DispatcherStub dispatcher;
+	private Dispatcher dispatcher;
 	private final long TEST_POWER_OBJECT_ID = 7676;
 	private final int TIME_DEALY = 10;
 	private LocalDateTime testTime;
@@ -38,9 +38,9 @@ public class DispatcherStubImplTest {
 		timeService = mock(TimeService.class);
 		receivedMessagesTimer = spy(new MultiTimer(timeService, TIME_DEALY));
 		sentMessagesTimer = spy(new MultiTimer(timeService, TIME_DEALY));
-		manager = mock(PowerObjectManager.class);
+		manager = mock(PowerObjectManagerStub.class);
 		powerObjectService = mock(PowerObjectService.class);
-		dispatcher = new DispatcherStub(receivedMessagesTimer, sentMessagesTimer,
+		dispatcher = new Dispatcher(receivedMessagesTimer, sentMessagesTimer,
 				powerObjectService, manager);
 		
 		when(parametersForTestObject.getPowerObjectId()).thenReturn(TEST_POWER_OBJECT_ID);

@@ -14,17 +14,17 @@ public class PowerStationGenerationScheduleCalculatorStub {
 	};
 	
 	//TODO calculate schedule according to power station parameters and situations with consumers. 
-	public PowerStationGenerationSchedule getSchedule(int powerStationNumber){
-		return createSchedule(powerStationNumber);
+	public PowerStationGenerationSchedule getSchedule(long powerStationId){
+		return createSchedule(powerStationId);
 	}
 	
-	private PowerStationGenerationSchedule createSchedule(int powerStationNumber){
+	private PowerStationGenerationSchedule createSchedule(long powerStationId){
 		LoadCurve generationCurve;
 		PowerStationGenerationSchedule generationSchedule;
 		GeneratorGenerationSchedule genrationSchedule_1;
 		GeneratorGenerationSchedule genrationSchedule_2;
 		
-		generationSchedule = new PowerStationGenerationSchedule(powerStationNumber);
+		generationSchedule = new PowerStationGenerationSchedule(powerStationId);
 		generationCurve = new LoadCurve(GENERATION_BY_HOURS);
 		genrationSchedule_1 = new GeneratorGenerationSchedule(1, true, true, null);
 		genrationSchedule_2 = new GeneratorGenerationSchedule(2, true, false, generationCurve);
