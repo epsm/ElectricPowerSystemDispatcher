@@ -66,7 +66,7 @@ public class DispatcherImplTest {
 	
 	private void addToTimeValueLessThanTimerDelayAndExecuteDispatcherTimeDependentOperation(){
 		when(timeService.getCurrentTime()).thenReturn(testTime.plusSeconds(TIME_DEALY - 1));
-		dispatcher.doRealTimeDependOperation();
+		dispatcher.doRealTimeDependingOperations();
 	}
 	
 	@Test
@@ -105,7 +105,7 @@ public class DispatcherImplTest {
 	private void addToTimeValueThanSeveralTimeLessThenDelayAndExecuteDispatcherTimeDependentOperation(){
 		when(timeService.getCurrentTime()).thenReturn(testTime.plusSeconds(TIME_DEALY / 3));
 		testTime = testTime.plusSeconds(TIME_DEALY / 3);
-		dispatcher.doRealTimeDependOperation();
+		dispatcher.doRealTimeDependingOperations();
 	}
 	
 	private void verifiedConnectionStillActive(){

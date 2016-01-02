@@ -33,7 +33,7 @@ public class DispatcherServiceImplTest{
 	private final float GENERATION_2 = 67f;
 	
 	@InjectMocks
-	private DispatcherServiceImpl service;
+	private DispatcherService service;
 	
 	@Mock
 	private GeneratorStateDao generatorDao;

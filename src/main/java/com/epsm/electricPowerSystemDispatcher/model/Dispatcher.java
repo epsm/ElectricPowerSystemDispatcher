@@ -10,10 +10,10 @@ import org.springframework.stereotype.Component;
 import com.epsm.electricPowerSystemDispatcher.service.PowerObjectService;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerObjectParameters;
 import com.epsm.electricPowerSystemModel.model.dispatch.PowerObjectState;
-import com.epsm.electricPowerSystemModel.model.generalModel.TimeServiceConsumer;
+import com.epsm.electricPowerSystemModel.model.generalModel.SimulationObject;
 
 @Component
-public class Dispatcher implements TimeServiceConsumer{
+public class Dispatcher implements SimulationObject{
 	private MultiTimer receivedMessagesTimer;
 	private MultiTimer sentMessagesTimer;
 	private PowerObjectService powerObjectService;
@@ -60,9 +60,9 @@ public class Dispatcher implements TimeServiceConsumer{
 	}
 
 	@Override
-	public void doRealTimeDependOperation() {
-		receivedMessagesTimer.doRealTimeDependOperation();
-		sentMessagesTimer.doRealTimeDependOperation();
+	public void doRealTimeDependingOperations() {
+		receivedMessagesTimer.doRealTimeDependingOperations();
+		sentMessagesTimer.doRealTimeDependingOperations();
 		sendMesagesToPowerObjects();
 	}
 	
