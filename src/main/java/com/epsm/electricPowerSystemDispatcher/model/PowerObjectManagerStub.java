@@ -38,31 +38,17 @@ public class PowerObjectManagerStub{
 		logger = LoggerFactory.getLogger(PowerObjectManagerStub.class);
 	}
 	
-	//Just a stub. Power object parameters have no effect.
-	public void rememberObject(Parameters parameters){
-		if(parameters == null){
-			logger.warn("Parameters must not be null.");
-			return;
-		}
-		
+	public boolean rememberObjectIfItTypeIsKnown(Parameters parameters){
 		long powerObjectId = parameters.getPowerObjectId();
 		
-		if(isPowerObjectKnown(parameters)){
-			storedParameters.putIfAbsent(powerObjectId, parameters);
-			logger.info("Recived {} from powerObject#{}.", parameters, powerObjectId);
-		}else{
-			logger.warn("Recived unknown parameters: {}.", parameters);
-		}
-	}
-	
-	private boolean isPowerObjectKnown(Parameters parameters){
 		if(parameters instanceof PowerStationParameters){
+			storedParameters.putIfAbsent(powerObjectId, parameters);
 			return true;
 		}else if(parameters instanceof ConsumerParametersStub){
+			storedParameters.putIfAbsent(powerObjectId, parameters);
 			return true;
 		}
-		
-		logger.warn("Unknown object parameters: {}.", parameters.getClass().getSimpleName());
+
 		return false;
 	}
 	
@@ -78,7 +64,7 @@ public class PowerObjectManagerStub{
 		}
 	}
 
-	public void sendMessageToPowerStation(long powerStationId){
+	private void sendMessageToPowerStation(long powerStationId){
 		PowerStationGenerationSchedule schedule = calculator.getSchedule(powerStationId);
 		dispatcher.sendCommand(schedule);
 		

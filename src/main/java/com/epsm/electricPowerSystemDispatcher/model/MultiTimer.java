@@ -18,20 +18,17 @@ public class MultiTimer{
 		this.delayInSeconds = delayInSeconds;
 	}
 	
-	public void startOrUpdateDelayOnTimeNumber(long timerNumber){
+	public void startOrUpdateDelayOnTimerNumber(long timerNumber){
 		LocalDateTime currentTime = timeService.getCurrentTime();
 		timers.put(timerNumber, currentTime);
 	}
 	
 	public Set<Long> getActiveTimers(){
+		manageEveryTimer();
 		return timers.keySet();
 	}
 	
-	public void manageTimers() {
-		manageEveryTimerTimers();
-	}
-	
-	private void manageEveryTimerTimers(){
+	private void manageEveryTimer(){
 		for(Long timerNumber: timers.keySet()){
 			manageTimer(timerNumber);
 		}
@@ -53,8 +50,9 @@ public class MultiTimer{
 	private void deleteTimer(long timerNumber){
 		timers.remove(timerNumber);
 	}
-
+	
 	public boolean isTimerActive(long timerNumber) {
+		manageEveryTimer();
 		return timers.containsKey(timerNumber);
 	}
 }

@@ -28,10 +28,9 @@ public class MiltiTimerTest {
 	
 	@Test
 	public void multitimerKeepsTimersWhileTheyNotOutOfTime(){
-		multitimer.startOrUpdateDelayOnTimeNumber(99);
-		multitimer.startOrUpdateDelayOnTimeNumber(202);
+		multitimer.startOrUpdateDelayOnTimerNumber(99);
+		multitimer.startOrUpdateDelayOnTimerNumber(202);
 		currentTimePlusTimeLessThenTimeout();
-		multitimer.manageTimers();
 		
 		Assert.assertTrue(multitimer.getActiveTimers().contains(99L));
 		Assert.assertTrue(multitimer.getActiveTimers().contains(202L));
@@ -44,9 +43,8 @@ public class MiltiTimerTest {
 	
 	@Test
 	public void multitimerDeletesTimersWhenTheirTimeIsOut(){
-		multitimer.startOrUpdateDelayOnTimeNumber(99);
+		multitimer.startOrUpdateDelayOnTimerNumber(99);
 		currentTimePlusTimeMoreThanTimeout();
-		multitimer.manageTimers();
 		
 		Assert.assertEquals(multitimer.getActiveTimers().size(), 0);
 	}
@@ -57,17 +55,16 @@ public class MiltiTimerTest {
 	
 	@Test
 	public void multitimerRefreshesTimeoutForActiveTimers(){
-		multitimer.startOrUpdateDelayOnTimeNumber(99);
+		multitimer.startOrUpdateDelayOnTimerNumber(99);
 		currentTimePlusTimeLessThenTimeout();
-		multitimer.startOrUpdateDelayOnTimeNumber(99);
-		multitimer.manageTimers();
+		multitimer.startOrUpdateDelayOnTimerNumber(99);
 		
 		Assert.assertTrue(multitimer.getActiveTimers().contains(99L));
 	}
 	
 	@Test
 	public void multitimerReturnsTrueIfRequestedTimerActive(){
-		multitimer.startOrUpdateDelayOnTimeNumber(99);
+		multitimer.startOrUpdateDelayOnTimerNumber(99);
 		multitimer.isTimerActive(1);
 		
 		Assert.assertTrue(multitimer.isTimerActive(99L));

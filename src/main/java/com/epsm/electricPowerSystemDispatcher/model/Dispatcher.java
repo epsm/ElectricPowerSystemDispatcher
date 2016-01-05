@@ -1,6 +1,5 @@
 package com.epsm.electricPowerSystemDispatcher.model;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -10,58 +9,71 @@ import org.springframework.stereotype.Component;
 
 import com.epsm.electricPowerSystemDispatcher.service.OutgoingMessageService;
 import com.epsm.electricPowerSystemDispatcher.service.PowerObjectService;
+import com.epsm.electricPowerSystemModel.model.bothConsumptionAndGeneration.Message;
 import com.epsm.electricPowerSystemModel.model.dispatch.Command;
 import com.epsm.electricPowerSystemModel.model.dispatch.Parameters;
 import com.epsm.electricPowerSystemModel.model.dispatch.State;
 import com.epsm.electricPowerSystemModel.model.generalModel.RealTimeOperations;
+import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
 
 @Component
 public class Dispatcher implements RealTimeOperations{
-	private MultiTimer receivedMessagesTimer;
-	private MultiTimer sentMessagesTimer;
-	private PowerObjectService powerObjectService;
-	private PowerObjectManagerStub manager;
+	private ConnectionManager connectionManager;
+	private PowerObjectManagerStub objectManager;
 	private Set<Long> powerObjectsToSendingMessages;
-	private Set<Long> activePowerObjects;
-	private Set<Long> servedPowerObjects;
 	private Logger logger;
 
 	@Autowired
-	private OutgoingMessageService service;
+	private PowerObjectService powerObjectService;
 	
-	public Dispatcher(MultiTimer receivedMessagesTimer, MultiTimer sentMessagesTimer,
-			PowerObjectService powerObjectService, PowerObjectManagerStub manager) {
+	@Autowired
+	private OutgoingMessageService outgoingMessageService;
 
-		this.receivedMessagesTimer = receivedMessagesTimer;
-		this.sentMessagesTimer = sentMessagesTimer;
-		this.powerObjectService = powerObjectService;
-		this.manager = manager;
+	public Dispatcher(TimeService timeService){
+		connectionManager = new ConnectionManager(timeService);
+		objectManager = new PowerObjectManagerStub(timeService, this);
+		
 		logger = LoggerFactory.getLogger(Dispatcher.class);
 	}
 
 	public void establishConnection(Parameters parameters){
-		long powerObjectId = parameters.getPowerObjectId();
-		refreshReceivedMessageTimerForPowerObject(powerObjectId);
-		manager.rememberObject(parameters);
-		
-		logger.info("Parameters was received: {}." + parameters);
-	}
-	
-	private void refreshReceivedMessageTimerForPowerObject(long powerObjectId){
-		receivedMessagesTimer.startOrUpdateDelayOnTimeNumber(powerObjectId);
-	}
-
-	public void acceptState(State state){
-		long powerObjectId = state.getPowerObjectId();
-		
-		if(isConnectionWithPowerObjectActive(powerObjectId)){
-			savePowerObjectState(state);
-			refreshReceivedMessageTimerForPowerObject(powerObjectId);
+		if(parameters == null){
+			logger.warn("Received null parameters.");
+		}else if(tryToRecognizeAndRememberObject(parameters)){
+			refreshConnectionTimeout(parameters);
+			
+			logger.info("Received {} from power object#{}.",
+					parameters.getClass().getSimpleName(), parameters.getPowerObjectId());
+		}else{
+			logger.warn("Recived unknown parameters: {}.", parameters);
 		}
 	}
 	
-	private boolean isConnectionWithPowerObjectActive(long powerObjectId){
-		return receivedMessagesTimer.isTimerActive(powerObjectId);
+	private boolean tryToRecognizeAndRememberObject(Parameters parameters){
+		return objectManager.rememberObjectIfItTypeIsKnown(parameters);
+	}
+	
+	private void refreshConnectionTimeout(Message parameters){
+		connectionManager.refreshTimeout(parameters.getPowerObjectId());
+	}
+
+	public void acceptState(State state){
+		if(state == null){
+			logger.warn("Received null state.");
+		}else if(isConnectiosActive(state)){
+			refreshConnectionTimeout(state);
+			savePowerObjectState(state);
+			
+			logger.info("Received {} from power object#{}.",
+					state.getClass().getSimpleName(), state.getPowerObjectId());
+		}else{
+			logger.info("Recived state from innactive object#{}.", state.getPowerObjectId());
+		}
+	}
+	
+	private boolean isConnectiosActive(State state){
+		long objectId = state.getPowerObjectId();
+		return connectionManager.isConnectionActive(objectId);
 	}
 	
 	private void savePowerObjectState(State state){
@@ -70,61 +82,53 @@ public class Dispatcher implements RealTimeOperations{
 
 	@Override
 	public void doRealTimeDependingOperations() {
-		receivedMessagesTimer.manageTimers();
-		sentMessagesTimer.manageTimers();
-		sendMesagesToPowerObjects();
+		sendCommandsToObjects();
 	}
 	
-	private void sendMesagesToPowerObjects(){
-		filterPowerObjectForSendingMessages();
+	private void sendCommandsToObjects(){
+		getNecessaryObjectsId();
 		sendMessageForAllAproropriateObjects();
 	}
 	
-	private void filterPowerObjectForSendingMessages(){
-		getAllActiveConnections();
-		getServedConnections();
-		substarctServedConnectionsFromActive();
-		fillPowerObjectsToSendingMessages();
-	}
-	
-	private void getAllActiveConnections(){
-		activePowerObjects = new HashSet<Long>(receivedMessagesTimer.getActiveTimers());
-	}
-	
-	private void getServedConnections(){
-		servedPowerObjects = new HashSet<Long>(sentMessagesTimer.getActiveTimers());
-	}
-	
-	private void substarctServedConnectionsFromActive(){
-		activePowerObjects.removeAll(servedPowerObjects);
-	}
-	
-	private void fillPowerObjectsToSendingMessages(){
-		powerObjectsToSendingMessages = activePowerObjects;
+	private void getNecessaryObjectsId(){
+		powerObjectsToSendingMessages = connectionManager.getConnectionsForSendingCommand();
 	}
 	
 	private void sendMessageForAllAproropriateObjects(){
 		for(Long powerObjectId: powerObjectsToSendingMessages){
-			if(isItTimeToSendMessageForPowerObject(powerObjectId)){
-				sendMessageForPowerObject(powerObjectId);
-			}
+			sendMessageForPowerObject(powerObjectId);
 		}
 	}
-	
-	private boolean isItTimeToSendMessageForPowerObject(long powerObjectId){
-		return !sentMessagesTimer.isTimerActive(powerObjectId);
-	}
-	
+
 	private void sendMessageForPowerObject(long powerObjectId){
-		manager.sendMessage(powerObjectId);
-		refreshSentMessageTimerForPowerObject(powerObjectId);
+		objectManager.sendMessage(powerObjectId);
 	}
 	
 	private void refreshSentMessageTimerForPowerObject(long powerObjectId){
-		sentMessagesTimer.startOrUpdateDelayOnTimeNumber(powerObjectId);
+		connectionManager.refreshLastSentCommandTime(powerObjectId);
 	}
 
 	public void sendCommand(Command command) {
-		service.sendCommand(command);
+		outgoingMessageService.sendCommand(command);
+		refreshSentMessageTimerForPowerObject(command.getPowerObjectId());
+		
+		logger.info("{} sent to object#{}.", command.getClass().getSimpleName(),
+				command.getPowerObjectId());
+	}
+
+	void setConnectionManager(ConnectionManager connectionManager) {
+		this.connectionManager = connectionManager;
+	}
+
+	void setObjectManager(PowerObjectManagerStub objectManager) {
+		this.objectManager = objectManager;
+	}
+
+	void setPowerObjectService(PowerObjectService powerObjectService) {
+		this.powerObjectService = powerObjectService;
+	}
+
+	void setOutgoingMessageService(OutgoingMessageService outgoingMessageService) {
+		this.outgoingMessageService = outgoingMessageService;
 	}
 }

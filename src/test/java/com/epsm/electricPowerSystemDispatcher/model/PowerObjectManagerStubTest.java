@@ -35,7 +35,7 @@ public class PowerObjectManagerStubTest {
 	public ExpectedException expectedEx = ExpectedException.none();
 	
 	@Before
-	public void initialize(){
+	public void setUp(){
 		timeService = new TimeService();
 		dispatcher = mock(Dispatcher.class);
 		manager = spy(new PowerObjectManagerStub(timeService, dispatcher));
@@ -76,7 +76,7 @@ public class PowerObjectManagerStubTest {
 	
 	@Test
 	public void managerSendsPowerStationGenerationScheduleToKnownPowerStations(){
-		manager.rememberObject(powerStationParameters);
+		manager.rememberObjectIfItTypeIsKnown(powerStationParameters);
 		manager.sendMessage(POWER_OBJECT_ID);
 		
 		verify(dispatcher).sendCommand(isA(PowerStationGenerationSchedule.class));
@@ -84,7 +84,7 @@ public class PowerObjectManagerStubTest {
 	
 	@Test
 	public void managerSendsConsumptionPermissionToKnownConsumers(){
-		manager.rememberObject(consumerParameters);
+		manager.rememberObjectIfItTypeIsKnown(consumerParameters);
 		manager.sendMessage(POWER_OBJECT_ID);
 		
 		verify(dispatcher).sendCommand(isA(ConsumptionPermissionStub.class));
@@ -92,15 +92,8 @@ public class PowerObjectManagerStubTest {
 	
 	@Test
 	public void managerSendsNothingToUnknownPowerObject(){
-		manager.rememberObject(unknownParameters);
+		manager.rememberObjectIfItTypeIsKnown(unknownParameters);
 		manager.sendMessage(POWER_OBJECT_ID);
-		
-		verify(dispatcher, never()).sendCommand(any());
-	}
-	
-	@Test
-	public void sendNothingIfParametersIsnull(){
-		manager.rememberObject(null);
 		
 		verify(dispatcher, never()).sendCommand(any());
 	}
