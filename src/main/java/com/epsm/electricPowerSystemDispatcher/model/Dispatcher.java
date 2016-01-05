@@ -5,25 +5,33 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.epsm.electricPowerSystemDispatcher.service.OutgoingMessageService;
 import com.epsm.electricPowerSystemDispatcher.service.PowerObjectService;
-import com.epsm.electricPowerSystemModel.model.dispatch.PowerObjectParameters;
-import com.epsm.electricPowerSystemModel.model.dispatch.PowerObjectState;
-import com.epsm.electricPowerSystemModel.model.generalModel.SimulationObject;
+import com.epsm.electricPowerSystemModel.model.dispatch.Command;
+import com.epsm.electricPowerSystemModel.model.dispatch.Parameters;
+import com.epsm.electricPowerSystemModel.model.dispatch.State;
+import com.epsm.electricPowerSystemModel.model.generalModel.RealTimeOperations;
 
 @Component
-public class Dispatcher implements SimulationObject{
+public class Dispatcher implements RealTimeOperations{
 	private MultiTimer receivedMessagesTimer;
 	private MultiTimer sentMessagesTimer;
 	private PowerObjectService powerObjectService;
 	private PowerObjectManagerStub manager;
 	private Set<Long> powerObjectsToSendingMessages;
+	private Set<Long> activePowerObjects;
+	private Set<Long> servedPowerObjects;
 	private Logger logger;
 
+	@Autowired
+	private OutgoingMessageService service;
+	
 	public Dispatcher(MultiTimer receivedMessagesTimer, MultiTimer sentMessagesTimer,
 			PowerObjectService powerObjectService, PowerObjectManagerStub manager) {
-		super();
+
 		this.receivedMessagesTimer = receivedMessagesTimer;
 		this.sentMessagesTimer = sentMessagesTimer;
 		this.powerObjectService = powerObjectService;
@@ -31,10 +39,10 @@ public class Dispatcher implements SimulationObject{
 		logger = LoggerFactory.getLogger(Dispatcher.class);
 	}
 
-	public void establishConnection(PowerObjectParameters parameters){
+	public void establishConnection(Parameters parameters){
 		long powerObjectId = parameters.getPowerObjectId();
 		refreshReceivedMessageTimerForPowerObject(powerObjectId);
-		manager.rememberPowerObjectParameters(parameters);
+		manager.rememberObject(parameters);
 		
 		logger.info("Parameters was received: {}." + parameters);
 	}
@@ -43,8 +51,9 @@ public class Dispatcher implements SimulationObject{
 		receivedMessagesTimer.startOrUpdateDelayOnTimeNumber(powerObjectId);
 	}
 
-	public void acceptState(PowerObjectState state){
+	public void acceptState(State state){
 		long powerObjectId = state.getPowerObjectId();
+		
 		if(isConnectionWithPowerObjectActive(powerObjectId)){
 			savePowerObjectState(state);
 			refreshReceivedMessageTimerForPowerObject(powerObjectId);
@@ -55,20 +64,43 @@ public class Dispatcher implements SimulationObject{
 		return receivedMessagesTimer.isTimerActive(powerObjectId);
 	}
 	
-	private void savePowerObjectState(PowerObjectState state){
+	private void savePowerObjectState(State state){
 		powerObjectService.savePowerObjectState(state);
 	}
 
 	@Override
 	public void doRealTimeDependingOperations() {
-		receivedMessagesTimer.doRealTimeDependingOperations();
-		sentMessagesTimer.doRealTimeDependingOperations();
+		receivedMessagesTimer.manageTimers();
+		sentMessagesTimer.manageTimers();
 		sendMesagesToPowerObjects();
 	}
 	
 	private void sendMesagesToPowerObjects(){
 		filterPowerObjectForSendingMessages();
 		sendMessageForAllAproropriateObjects();
+	}
+	
+	private void filterPowerObjectForSendingMessages(){
+		getAllActiveConnections();
+		getServedConnections();
+		substarctServedConnectionsFromActive();
+		fillPowerObjectsToSendingMessages();
+	}
+	
+	private void getAllActiveConnections(){
+		activePowerObjects = new HashSet<Long>(receivedMessagesTimer.getActiveTimers());
+	}
+	
+	private void getServedConnections(){
+		servedPowerObjects = new HashSet<Long>(sentMessagesTimer.getActiveTimers());
+	}
+	
+	private void substarctServedConnectionsFromActive(){
+		activePowerObjects.removeAll(servedPowerObjects);
+	}
+	
+	private void fillPowerObjectsToSendingMessages(){
+		powerObjectsToSendingMessages = activePowerObjects;
 	}
 	
 	private void sendMessageForAllAproropriateObjects(){
@@ -83,13 +115,6 @@ public class Dispatcher implements SimulationObject{
 		return !sentMessagesTimer.isTimerActive(powerObjectId);
 	}
 	
-	private void filterPowerObjectForSendingMessages(){
-		Set<Long> activePowerObjects = new HashSet<Long>(receivedMessagesTimer.getActiveTimers());
-		Set<Long> notApropriatePowerObjects = new HashSet<Long>(sentMessagesTimer.getActiveTimers());
-		activePowerObjects.removeAll(notApropriatePowerObjects);
-		powerObjectsToSendingMessages = activePowerObjects;
-	}
-	
 	private void sendMessageForPowerObject(long powerObjectId){
 		manager.sendMessage(powerObjectId);
 		refreshSentMessageTimerForPowerObject(powerObjectId);
@@ -98,9 +123,8 @@ public class Dispatcher implements SimulationObject{
 	private void refreshSentMessageTimerForPowerObject(long powerObjectId){
 		sentMessagesTimer.startOrUpdateDelayOnTimeNumber(powerObjectId);
 	}
+
+	public void sendCommand(Command command) {
+		service.sendCommand(command);
+	}
 }
-
-
-
-
-

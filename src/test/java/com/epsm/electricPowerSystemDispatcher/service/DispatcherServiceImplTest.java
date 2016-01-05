@@ -17,8 +17,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.epsm.electricPowerSystemDispatcher.model.domain.SavedGeneratorState;
 import com.epsm.electricPowerSystemDispatcher.repository.GeneratorStateDao;
-import com.epsm.electricPowerSystemModel.model.dispatch.GeneratorState;
-import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationState;
+import com.epsm.electricPowerSystemModel.model.generation.GeneratorState;
+import com.epsm.electricPowerSystemModel.model.generation.PowerStationState;
+import com.epsm.electricPowerSystemModel.service.DispatcherService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DispatcherServiceImplTest{

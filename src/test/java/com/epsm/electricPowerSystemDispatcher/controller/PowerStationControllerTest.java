@@ -17,8 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.epsm.electricPowerSystemDispatcher.service.PowerObjectService;
-import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationParameters;
-import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationState;
+import com.epsm.electricPowerSystemModel.model.dispatch.Parameters;
+import com.epsm.electricPowerSystemModel.model.dispatch.State;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -54,7 +54,7 @@ public class PowerStationControllerTest {
 	}
 	
 	private void prepareParemetersAsJSONString() throws JsonProcessingException{
-		objectToSerialize = new PowerStationParameters(1, Collections.emptyMap());
+		objectToSerialize = new Parameters(1, Collections.emptyMap());
 		objectInJsonString = mapper.writeValueAsString(objectToSerialize);
 	}
 	
@@ -70,7 +70,7 @@ public class PowerStationControllerTest {
 	}
 	
 	private void prepareStateAsJSONString() throws JsonProcessingException{
-		objectToSerialize = new PowerStationState(1, LocalTime.NOON, 50, Collections.emptySet());
+		objectToSerialize = new State(1, LocalTime.NOON, 50, Collections.emptySet());
 		objectInJsonString = mapper.writeValueAsString(objectToSerialize);
 	}
 }

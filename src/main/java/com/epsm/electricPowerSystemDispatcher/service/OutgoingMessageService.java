@@ -1,7 +1,7 @@
 package com.epsm.electricPowerSystemDispatcher.service;
 
-import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationGenerationSchedule;
+import com.epsm.electricPowerSystemModel.model.dispatch.Command;
 
 public interface OutgoingMessageService {
-	void sendMessageToPowerStation(PowerStationGenerationSchedule schedule);
+	void sendCommand(Command command);
 }

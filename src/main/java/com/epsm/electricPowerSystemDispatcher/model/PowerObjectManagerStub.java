@@ -1,69 +1,94 @@
 package com.epsm.electricPowerSystemDispatcher.model;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.epsm.electricPowerSystemDispatcher.service.OutgoingMessageService;
-import com.epsm.electricPowerSystemModel.model.dispatch.ConsumerParametersStub;
-import com.epsm.electricPowerSystemModel.model.dispatch.ConsumptionPermissionStub;
-import com.epsm.electricPowerSystemModel.model.dispatch.PowerObjectParameters;
-import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationGenerationSchedule;
-import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationParameters;
+import com.epsm.electricPowerSystemModel.model.consumption.ConsumerParametersStub;
+import com.epsm.electricPowerSystemModel.model.consumption.ConsumptionPermissionStub;
+import com.epsm.electricPowerSystemModel.model.dispatch.Parameters;
+import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
+import com.epsm.electricPowerSystemModel.model.generation.PowerStationGenerationSchedule;
+import com.epsm.electricPowerSystemModel.model.generation.PowerStationParameters;
 
 //It just a stub. More complex model see com.epsm.electricPowerSystemModel.model.*;
 public class PowerObjectManagerStub{
-	private Map<Long, PowerObjectParameters> storedParameters;
+	private Map<Long, Parameters> storedParameters;
 	private PowerStationGenerationScheduleCalculatorStub calculator;
+	private Dispatcher dispatcher;
+	private TimeService timeService;
 	private Logger logger;
 	
-	public PowerObjectManagerStub() {
-		storedParameters = new ConcurrentHashMap<Long, PowerObjectParameters>();
-		calculator = new PowerStationGenerationScheduleCalculatorStub();
+	public PowerObjectManagerStub(TimeService timeService, Dispatcher dispatcher) {
+		if(timeService == null){
+			String message = "PowerObjectManagerStub constructor: timeService can't be null.";
+			throw new IllegalArgumentException(message);
+		}else if(dispatcher == null){
+			String message = "PowerObjectManagerStub constructor: dispatcher can't be null.";
+			throw new IllegalArgumentException(message);
+		}
+		
+		this.timeService = timeService;
+		this.dispatcher = dispatcher;
+		storedParameters = new ConcurrentHashMap<Long, Parameters>();
+		calculator = new PowerStationGenerationScheduleCalculatorStub(timeService);
 		logger = LoggerFactory.getLogger(PowerObjectManagerStub.class);
 	}
 	
-	@Autowired
-	private OutgoingMessageService service;
-	
 	//Just a stub. Power object parameters have no effect.
-	public void rememberPowerObjectParameters(PowerObjectParameters parameters){
+	public void rememberObject(Parameters parameters){
+		if(parameters == null){
+			logger.warn("Parameters must not be null.");
+			return;
+		}
+		
 		long powerObjectId = parameters.getPowerObjectId();
-		storedParameters.putIfAbsent(powerObjectId, parameters);
+		
+		if(isPowerObjectKnown(parameters)){
+			storedParameters.putIfAbsent(powerObjectId, parameters);
+			logger.info("Recived {} from powerObject#{}.", parameters, powerObjectId);
+		}else{
+			logger.warn("Recived unknown parameters: {}.", parameters);
+		}
+	}
+	
+	private boolean isPowerObjectKnown(Parameters parameters){
+		if(parameters instanceof PowerStationParameters){
+			return true;
+		}else if(parameters instanceof ConsumerParametersStub){
+			return true;
+		}
+		
+		logger.warn("Unknown object parameters: {}.", parameters.getClass().getSimpleName());
+		return false;
 	}
 	
 	public void sendMessage(long powerObjectId){
-		PowerObjectParameters parameters = storedParameters.get(powerObjectId);
+		Parameters parameters = storedParameters.get(powerObjectId);
 		
 		if(parameters == null){
-			logger.warn("Request sending message to PowerObject with id {} that is null.", powerObjectId);
-			return;
+			logger.warn("Requested sending message to null powerObject#{}.", powerObjectId);
 		}else if(parameters instanceof PowerStationParameters){
 			sendMessageToPowerStation(powerObjectId);
-			logger.info("Sent schedule to power station with id {}.", powerObjectId);
-		}else if(parameters instanceof ConsumerParametersStub){
+		}else{
 			sendMessageToConsumer(powerObjectId);
-			logger.info("Sent schedule to power station with id {}.", powerObjectId);
 		}
-		//schedule
-		//message
-		//unknown
-
 	}
 
 	public void sendMessageToPowerStation(long powerStationId){
 		PowerStationGenerationSchedule schedule = calculator.getSchedule(powerStationId);
-		service.sendMessageToPowerStation(schedule);
+		dispatcher.sendCommand(schedule);
 		
-		logger.info("Schedule sent to power station with id {}." + powerStationId);
+		logger.info("Schedule sent to power station#{}." + powerStationId);
 	}
 	
 	private void sendMessageToConsumer(long consumerId) {
-		ConsumptionPermissionStub permission = new ConsumptionPermissionStub(LocalDateTime.MIN);
+		ConsumptionPermissionStub permission = new ConsumptionPermissionStub(
+				consumerId, timeService.getCurrentTime(), LocalTime.MIN);
 		
+		dispatcher.sendCommand(permission);
 	}
 }

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.epsm.electricPowerSystemDispatcher.util.UrlRequestSender;
-import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationGenerationSchedule;
+import com.epsm.electricPowerSystemModel.model.generation.PowerStationGenerationSchedule;
 
 @Component
 public class PowerStationClient{

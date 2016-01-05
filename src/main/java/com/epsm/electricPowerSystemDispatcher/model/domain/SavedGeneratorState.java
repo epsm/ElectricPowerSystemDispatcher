@@ -77,4 +77,3 @@ public class SavedGeneratorState{
 		this.timeStamp = timeStamp;
 	}
 }
-

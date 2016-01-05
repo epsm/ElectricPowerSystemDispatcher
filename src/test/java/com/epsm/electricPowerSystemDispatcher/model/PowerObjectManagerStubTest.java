@@ -1,65 +1,107 @@
 package com.epsm.electricPowerSystemDispatcher.model;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.time.LocalTime;
 
 import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.rules.ExpectedException;
 
-import com.epsm.electricPowerSystemDispatcher.service.OutgoingMessageService;
-import com.epsm.electricPowerSystemModel.model.dispatch.ConsumerParametersStub;
-import com.epsm.electricPowerSystemModel.model.dispatch.ConsumptionPermissionStub;
-import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationGenerationSchedule;
-import com.epsm.electricPowerSystemModel.model.dispatch.PowerStationParameters;
+import com.epsm.electricPowerSystemModel.model.consumption.ConsumerParametersStub;
+import com.epsm.electricPowerSystemModel.model.consumption.ConsumptionPermissionStub;
+import com.epsm.electricPowerSystemModel.model.dispatch.Parameters;
+import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
+import com.epsm.electricPowerSystemModel.model.generation.PowerStationGenerationSchedule;
+import com.epsm.electricPowerSystemModel.model.generation.PowerStationParameters;
 
-@RunWith(MockitoJUnitRunner.class)
 public class PowerObjectManagerStubTest {
-	private PowerStationGenerationScheduleCalculatorStub calculator;
-	private PowerStationGenerationSchedule schedule;
-	private ConsumptionPermissionStub permission;
+	private TimeService timeService;
+	private Dispatcher dispatcher;
+	private PowerObjectManagerStub manager;
 	private PowerStationParameters powerStationParameters;
 	private ConsumerParametersStub consumerParameters;
+	private Parameters unknownParameters;
 	private final int POWER_OBJECT_ID = 468;
 	
-	@InjectMocks
-	private PowerObjectManagerStub manager;
-	
-	@Mock
-	private OutgoingMessageService service;
+	@Rule
+	public ExpectedException expectedEx = ExpectedException.none();
 	
 	@Before
 	public void initialize(){
-		calculator = new PowerStationGenerationScheduleCalculatorStub();
-		schedule = calculator.getSchedule(POWER_OBJECT_ID);
-		permission = new ConsumptionPermissionStub(POWER_OBJECT_ID);
-		powerStationParameters = new PowerStationParameters(POWER_OBJECT_ID, Collections.EMPTY_MAP);
-		consumerParameters = new ConsumerParametersStub(POWER_OBJECT_ID);
+		timeService = new TimeService();
+		dispatcher = mock(Dispatcher.class);
+		manager = spy(new PowerObjectManagerStub(timeService, dispatcher));
+		powerStationParameters = new PowerStationParameters(POWER_OBJECT_ID, LocalDateTime.MIN,
+				LocalTime.MIN, 2);
+		consumerParameters = new ConsumerParametersStub(POWER_OBJECT_ID, LocalDateTime.MIN,
+				LocalTime.MIN);
+		unknownParameters = new UnknownParameters(POWER_OBJECT_ID, LocalDateTime.MIN,
+				LocalTime.MIN);
+	}
+	
+	private class UnknownParameters extends Parameters{
+		public UnknownParameters(long powerObjectId, LocalDateTime realTimeStamp, LocalTime simulationTimeStamp) {
+			super(powerObjectId, realTimeStamp, simulationTimeStamp);
+		}
+
+		@Override
+		public String toString() {
+			return null;
+		}
 	}
 	
 	@Test
-	public void sendsNotNulScheduleToPowerStationWithKnownParameters(){
-		manager.rememberPowerObjectParameters(powerStationParameters);
+	public void exceptionInConstructorIfTimeServiceIsNull(){
+		expectedEx.expect(IllegalArgumentException.class);
+	    expectedEx.expectMessage("PowerObjectManagerStub constructor: timeService can't be null.");
+	
+	    new PowerObjectManagerStub(null, dispatcher);
+	}
+	
+	@Test
+	public void exceptionInConstructorIfDispatcherIsNull(){
+		expectedEx.expect(IllegalArgumentException.class);
+	    expectedEx.expectMessage("PowerObjectManagerStub constructor: dispatcher can't be null.");
+	
+	    new PowerObjectManagerStub(timeService, null);
+	}
+	
+	@Test
+	public void managerSendsPowerStationGenerationScheduleToKnownPowerStations(){
+		manager.rememberObject(powerStationParameters);
 		manager.sendMessage(POWER_OBJECT_ID);
 		
-		verify(service).sendMessageToPowerStation(isA(PowerStationGenerationSchedule.class));
+		verify(dispatcher).sendCommand(isA(PowerStationGenerationSchedule.class));
 	}
 	
 	@Test
-	public void sendsNotNulMessagesToConsumersWithKnownPaarameters(){
+	public void managerSendsConsumptionPermissionToKnownConsumers(){
+		manager.rememberObject(consumerParameters);
+		manager.sendMessage(POWER_OBJECT_ID);
 		
+		verify(dispatcher).sendCommand(isA(ConsumptionPermissionStub.class));
 	}
 	
-	@Ignore
 	@Test
-	public void sendsNothingToUnknownPowerObject(){
+	public void managerSendsNothingToUnknownPowerObject(){
+		manager.rememberObject(unknownParameters);
+		manager.sendMessage(POWER_OBJECT_ID);
 		
+		verify(dispatcher, never()).sendCommand(any());
+	}
+	
+	@Test
+	public void sendNothingIfParametersIsnull(){
+		manager.rememberObject(null);
+		
+		verify(dispatcher, never()).sendCommand(any());
 	}
 }

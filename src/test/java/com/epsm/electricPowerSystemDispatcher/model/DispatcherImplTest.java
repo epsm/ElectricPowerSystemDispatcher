@@ -14,33 +14,34 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.epsm.electricPowerSystemDispatcher.service.PowerObjectService;
-import com.epsm.electricPowerSystemModel.model.dispatch.PowerObjectParameters;
-import com.epsm.electricPowerSystemModel.model.dispatch.PowerObjectState;
+import com.epsm.electricPowerSystemModel.model.dispatch.Dispatcher;
+import com.epsm.electricPowerSystemModel.model.dispatch.Parameters;
+import com.epsm.electricPowerSystemModel.model.dispatch.State;
 import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
 
 public class DispatcherImplTest {
-	private PowerObjectParameters parametersForTestObject;
-	private PowerObjectState state;
+	private Parameters parametersForTestObject;
+	private State state;
 	private TimeService timeService;
 	private MultiTimer receivedMessagesTimer;
 	private MultiTimer sentMessagesTimer;
 	private PowerObjectManagerStub manager;
 	private PowerObjectService powerObjectService;
-	private Dispatcher dispatcher;
+	private DispatcherImpl dispatcher;
 	private final long TEST_POWER_OBJECT_ID = 7676;
 	private final int TIME_DEALY = 10;
 	private LocalDateTime testTime;
 	
 	@Before
 	public void initialize(){
-		parametersForTestObject = mock(PowerObjectParameters.class);
-		state = mock(PowerObjectState.class);
+		parametersForTestObject = mock(Parameters.class);
+		state = mock(State.class);
 		timeService = mock(TimeService.class);
 		receivedMessagesTimer = spy(new MultiTimer(timeService, TIME_DEALY));
 		sentMessagesTimer = spy(new MultiTimer(timeService, TIME_DEALY));
 		manager = mock(PowerObjectManagerStub.class);
 		powerObjectService = mock(PowerObjectService.class);
-		dispatcher = new Dispatcher(receivedMessagesTimer, sentMessagesTimer,
+		dispatcher = new DispatcherImpl(receivedMessagesTimer, sentMessagesTimer,
 				powerObjectService, manager);
 		
 		when(parametersForTestObject.getPowerObjectId()).thenReturn(TEST_POWER_OBJECT_ID);
@@ -120,6 +121,6 @@ public class DispatcherImplTest {
 	public void passPowerObjectParametersToPowerObjectManager(){
 		dispatcher.establishConnection(parametersForTestObject);
 		
-		verify(manager).rememberPowerObjectParameters(parametersForTestObject);
+		verify(manager).rememberObject(parametersForTestObject);
 	}
 }

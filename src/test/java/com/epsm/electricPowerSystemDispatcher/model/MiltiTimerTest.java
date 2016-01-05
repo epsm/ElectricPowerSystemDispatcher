@@ -31,7 +31,7 @@ public class MiltiTimerTest {
 		multitimer.startOrUpdateDelayOnTimeNumber(99);
 		multitimer.startOrUpdateDelayOnTimeNumber(202);
 		currentTimePlusTimeLessThenTimeout();
-		multitimer.doRealTimeDependingOperations();
+		multitimer.manageTimers();
 		
 		Assert.assertTrue(multitimer.getActiveTimers().contains(99L));
 		Assert.assertTrue(multitimer.getActiveTimers().contains(202L));
@@ -46,7 +46,7 @@ public class MiltiTimerTest {
 	public void multitimerDeletesTimersWhenTheirTimeIsOut(){
 		multitimer.startOrUpdateDelayOnTimeNumber(99);
 		currentTimePlusTimeMoreThanTimeout();
-		multitimer.doRealTimeDependingOperations();
+		multitimer.manageTimers();
 		
 		Assert.assertEquals(multitimer.getActiveTimers().size(), 0);
 	}
@@ -60,7 +60,7 @@ public class MiltiTimerTest {
 		multitimer.startOrUpdateDelayOnTimeNumber(99);
 		currentTimePlusTimeLessThenTimeout();
 		multitimer.startOrUpdateDelayOnTimeNumber(99);
-		multitimer.doRealTimeDependingOperations();
+		multitimer.manageTimers();
 		
 		Assert.assertTrue(multitimer.getActiveTimers().contains(99L));
 	}

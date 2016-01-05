@@ -6,9 +6,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
-import com.epsm.electricPowerSystemModel.model.generalModel.SimulationObject;
 
-public class MultiTimer implements SimulationObject{
+public class MultiTimer{
 	private Map<Long, LocalDateTime> timers;
 	private TimeService timeService;
 	private int delayInSeconds;
@@ -28,12 +27,11 @@ public class MultiTimer implements SimulationObject{
 		return timers.keySet();
 	}
 	
-	@Override
-	public void doRealTimeDependingOperations() {
-		manageTimers();
+	public void manageTimers() {
+		manageEveryTimerTimers();
 	}
 	
-	private void manageTimers(){
+	private void manageEveryTimerTimers(){
 		for(Long timerNumber: timers.keySet()){
 			manageTimer(timerNumber);
 		}
