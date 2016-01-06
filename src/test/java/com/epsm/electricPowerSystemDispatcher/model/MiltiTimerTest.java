@@ -9,8 +9,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
-
 public class MiltiTimerTest {
 	private TimeService timeService; 
 	private MultiTimer multitimer;

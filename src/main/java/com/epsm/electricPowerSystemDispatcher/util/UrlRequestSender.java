@@ -10,13 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class UrlRequestSender {
-	public void sendEmptyRequestToUrlWithPOST(String url) throws Exception{;
-		URL urlObject = new URL(url);
-		HttpURLConnection connection = (HttpURLConnection) urlObject.openConnection();
-		
-		connection.setRequestMethod("POST");
-		connection.getResponseCode();
-	}
 	
 	public void sendObjectInJsonToUrlWithPOST(String url, Object object) throws Exception{;
 		URL urlObject = new URL(url);

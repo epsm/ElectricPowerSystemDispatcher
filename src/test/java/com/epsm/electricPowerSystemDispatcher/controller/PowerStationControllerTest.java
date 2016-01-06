@@ -4,8 +4,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,9 +16,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.epsm.electricPowerSystemDispatcher.service.PowerObjectService;
-import com.epsm.electricPowerSystemModel.model.dispatch.Parameters;
-import com.epsm.electricPowerSystemModel.model.dispatch.State;
+import com.epsm.electricPowerSystemDispatcher.service.IncomingMessageService;
+import com.epsm.electricPowerSystemModel.model.generation.GeneratorParameters;
+import com.epsm.electricPowerSystemModel.model.generation.GeneratorState;
+import com.epsm.electricPowerSystemModel.model.generation.PowerStationParameters;
+import com.epsm.electricPowerSystemModel.model.generation.PowerStationState;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -33,7 +35,7 @@ public class PowerStationControllerTest {
 	private PowerStationController controller;
 	
 	@Mock
-	private PowerObjectService service;
+	private IncomingMessageService service;
 	
 	@Before
 	public void initialize(){
@@ -47,14 +49,19 @@ public class PowerStationControllerTest {
 		prepareParemetersAsJSONString();
 		
 		mockMvc.perform(
-				post("/api/powerstation/register")
+				post("/api/powerstation/esatblishconnection")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectInJsonString))
 				.andExpect(status().isOk());
 	}
 	
 	private void prepareParemetersAsJSONString() throws JsonProcessingException{
-		objectToSerialize = new Parameters(1, Collections.emptyMap());
+		GeneratorParameters generatorParameters = new GeneratorParameters(1, 10, 5);
+		PowerStationParameters stationParameters = new PowerStationParameters(
+				0, LocalDateTime.MIN, LocalTime.MIN, 1);
+		
+		stationParameters.addGeneratorParameters(generatorParameters);
+		objectToSerialize = stationParameters;
 		objectInJsonString = mapper.writeValueAsString(objectToSerialize);
 	}
 	
@@ -70,7 +77,12 @@ public class PowerStationControllerTest {
 	}
 	
 	private void prepareStateAsJSONString() throws JsonProcessingException{
-		objectToSerialize = new State(1, LocalTime.NOON, 50, Collections.emptySet());
+		PowerStationState stationState = new PowerStationState(
+				0, LocalDateTime.MIN, LocalTime.MIN, 1, 1f);
+		GeneratorState generatorState = new GeneratorState(1, 10);
+		
+		stationState.addGeneratorState(generatorState);
+		objectToSerialize = stationState;
 		objectInJsonString = mapper.writeValueAsString(objectToSerialize);
 	}
 }

@@ -3,7 +3,6 @@ package com.epsm.electricPowerSystemDispatcher.model;
 import java.time.LocalTime;
 
 import com.epsm.electricPowerSystemModel.model.bothConsumptionAndGeneration.LoadCurve;
-import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
 import com.epsm.electricPowerSystemModel.model.generation.GeneratorGenerationSchedule;
 import com.epsm.electricPowerSystemModel.model.generation.PowerStationGenerationSchedule;
 

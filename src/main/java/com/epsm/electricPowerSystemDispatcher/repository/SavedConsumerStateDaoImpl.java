@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.epsm.electricPowerSystemDispatcher.model.domain.SavedConsumerState;
 
 @Repository
-public class ConsumerStateDaoImpl implements ConsumerStateDao{
+public class SavedConsumerStateDaoImpl implements SavedConsumerStateDao{
 
 	@PersistenceContext
 	private EntityManager em;

@@ -26,7 +26,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 public class GeneratorStateDaoImplTest{
 	
 	@Autowired
-	GeneratorStateDao dao;
+	SavedGeneratorStateDao dao;
 	
 	@Test
 	public void testGetStatesByPowerStationNumber(){

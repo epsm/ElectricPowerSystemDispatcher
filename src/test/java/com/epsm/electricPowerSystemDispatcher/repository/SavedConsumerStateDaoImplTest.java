@@ -23,10 +23,10 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 		DependencyInjectionTestExecutionListener.class,	DirtiesContextTestExecutionListener.class,})
 @Transactional
 @DatabaseSetup(value="consumer_states.xml", type= DatabaseOperation.REFRESH)
-public class ConsumerStateDaoImplTest{
+public class SavedConsumerStateDaoImplTest{
 	
 	@Autowired
-	ConsumerStateDao dao;
+	SavedConsumerStateDao dao;
 	
 	@Test
 	public void testGetStatesByPowerStationNumber(){

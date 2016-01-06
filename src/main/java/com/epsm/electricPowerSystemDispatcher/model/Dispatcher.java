@@ -14,7 +14,6 @@ import com.epsm.electricPowerSystemModel.model.dispatch.Command;
 import com.epsm.electricPowerSystemModel.model.dispatch.Parameters;
 import com.epsm.electricPowerSystemModel.model.dispatch.State;
 import com.epsm.electricPowerSystemModel.model.generalModel.RealTimeOperations;
-import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
 
 @Component
 public class Dispatcher implements RealTimeOperations{
@@ -29,6 +28,7 @@ public class Dispatcher implements RealTimeOperations{
 	@Autowired
 	private OutgoingMessageService outgoingMessageService;
 
+	@Autowired
 	public Dispatcher(TimeService timeService){
 		connectionManager = new ConnectionManager(timeService);
 		objectManager = new PowerObjectManagerStub(timeService, this);

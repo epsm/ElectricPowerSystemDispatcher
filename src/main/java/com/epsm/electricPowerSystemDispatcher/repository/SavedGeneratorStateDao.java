@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.epsm.electricPowerSystemDispatcher.model.domain.SavedGeneratorState;
 
-public interface GeneratorStateDao {
+public interface SavedGeneratorStateDao {
 	public List<SavedGeneratorState> getStatesByPowerStationNumber(int powerStationNumber);
 	public void saveState(SavedGeneratorState state);
 }

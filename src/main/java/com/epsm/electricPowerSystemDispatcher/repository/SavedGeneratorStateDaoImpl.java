@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.epsm.electricPowerSystemDispatcher.model.domain.SavedGeneratorState;
 
 @Repository
-public class GeneratorStateDaoImpl implements GeneratorStateDao{
+public class SavedGeneratorStateDaoImpl implements SavedGeneratorStateDao{
 
 	@PersistenceContext
 	private EntityManager em;

@@ -12,31 +12,18 @@ public class PowerStationClient{
 	@Autowired
 	private UrlRequestSender sender;
 	
-	public void sendSubscribeRequestToPowerStation(int powerStationNumber) throws Exception{
-		String url = prepareUrlForSubscribing(powerStationNumber);
-		
-		sender.sendEmptyRequestToUrlWithPOST(url);
-	}
-	
-	private String prepareUrlForSubscribing(int powerStationNumber){
-		String host = "http://localhost:8080/";
-		String apiUrl ="epsm/api/powerstation/subscribe/";
-		
-		return host + apiUrl + powerStationNumber;
-	}
-	
-	public void sendGenerationScheduleToPowerStation(int powerStationNumber,
-			PowerStationGenerationSchedule schedule) throws Exception{
-		
-		String url = prepareUrlForSendingSchedule(powerStationNumber);
+	public void sendGenerationScheduleToPowerStation(PowerStationGenerationSchedule schedule)
+			throws Exception{
+		Long powerStationId = schedule.getPowerObjectId();
+		String url = prepareUrlForSendingSchedule(powerStationId);
 		
 		sender.sendObjectInJsonToUrlWithPOST(url, schedule);
 	}
 	
-	private String prepareUrlForSendingSchedule(int powerStationNumber){
+	private String prepareUrlForSendingSchedule(long powerStationId){
 		String host = "http://localhost:8080/";
 		String apiUrl ="epsm/api/powerstation/acceptschedule";
 		
-		return host + apiUrl + powerStationNumber;
+		return host + apiUrl + powerStationId;
 	}
 }

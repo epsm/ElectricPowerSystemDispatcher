@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import com.epsm.electricPowerSystemModel.model.consumption.ConsumerParametersStub;
 import com.epsm.electricPowerSystemModel.model.consumption.ConsumptionPermissionStub;
 import com.epsm.electricPowerSystemModel.model.dispatch.Parameters;
-import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
 import com.epsm.electricPowerSystemModel.model.generation.PowerStationGenerationSchedule;
 import com.epsm.electricPowerSystemModel.model.generation.PowerStationParameters;
 
