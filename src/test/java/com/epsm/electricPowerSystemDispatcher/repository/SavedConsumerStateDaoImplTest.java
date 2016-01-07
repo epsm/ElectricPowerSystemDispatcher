@@ -17,8 +17,8 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={DbTestConfiguration.class})
+@RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({DbUnitTestExecutionListener.class, TransactionalTestExecutionListener.class,
 		DependencyInjectionTestExecutionListener.class,	DirtiesContextTestExecutionListener.class,})
 @Transactional

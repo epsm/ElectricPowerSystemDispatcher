@@ -23,6 +23,7 @@ import com.epsm.electricPowerSystemModel.model.consumption.ConsumptionPermission
 import com.epsm.electricPowerSystemModel.model.dispatch.Command;
 import com.epsm.electricPowerSystemModel.model.dispatch.Parameters;
 import com.epsm.electricPowerSystemModel.model.dispatch.State;
+import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
 
 public class DispatcherImplTest {
 	private DispatcherImpl dispatcher;

@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
+
 public class MultiTimer{
 	private Map<Long, LocalDateTime> timers;
 	private TimeService timeService;

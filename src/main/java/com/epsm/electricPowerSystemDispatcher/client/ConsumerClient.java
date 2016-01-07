@@ -1,11 +1,13 @@
 package com.epsm.electricPowerSystemDispatcher.client;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
 
-import com.epsm.electricPowerSystemDispatcher.util.UrlRequestSender;
 import com.epsm.electricPowerSystemModel.model.consumption.ConsumptionPermissionStub;
+import com.epsm.electricPowerSystemModel.util.UrlRequestSender;
 
+@Import(UrlRequestSender.class)
 @Component
 public class ConsumerClient{
 	

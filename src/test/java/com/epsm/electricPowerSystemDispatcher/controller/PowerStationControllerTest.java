@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -21,9 +22,11 @@ import com.epsm.electricPowerSystemModel.model.generation.GeneratorParameters;
 import com.epsm.electricPowerSystemModel.model.generation.GeneratorState;
 import com.epsm.electricPowerSystemModel.model.generation.PowerStationParameters;
 import com.epsm.electricPowerSystemModel.model.generation.PowerStationState;
+import com.epsm.electricPowerSystemModel.util.UrlRequestSender;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Import(UrlRequestSender.class)
 @RunWith(MockitoJUnitRunner.class)
 public class PowerStationControllerTest {
 	private MockMvc mockMvc;

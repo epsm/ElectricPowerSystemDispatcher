@@ -3,8 +3,8 @@ package com.epsm.electricPowerSystemDispatcher.client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.epsm.electricPowerSystemDispatcher.util.UrlRequestSender;
 import com.epsm.electricPowerSystemModel.model.generation.PowerStationGenerationSchedule;
+import com.epsm.electricPowerSystemModel.util.UrlRequestSender;
 
 @Component
 public class PowerStationClient{

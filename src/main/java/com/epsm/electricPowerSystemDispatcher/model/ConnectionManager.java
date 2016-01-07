@@ -3,6 +3,8 @@ package com.epsm.electricPowerSystemDispatcher.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
+
 public class ConnectionManager {
 	private MultiTimer activeConnectionsTimer;
 	private MultiTimer servedConnectionsTimer;
