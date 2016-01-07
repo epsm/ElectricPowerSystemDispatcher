@@ -17,11 +17,11 @@ import com.epsm.electricPowerSystemModel.model.generation.PowerStationParameters
 public class PowerObjectManagerStub{
 	private Map<Long, Parameters> storedParameters;
 	private PowerStationGenerationScheduleCalculatorStub calculator;
-	private Dispatcher dispatcher;
+	private DispatcherImpl dispatcher;
 	private TimeService timeService;
 	private Logger logger;
 	
-	public PowerObjectManagerStub(TimeService timeService, Dispatcher dispatcher) {
+	public PowerObjectManagerStub(TimeService timeService, DispatcherImpl dispatcher) {
 		if(timeService == null){
 			String message = "PowerObjectManagerStub constructor: timeService can't be null.";
 			throw new IllegalArgumentException(message);

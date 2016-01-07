@@ -11,12 +11,13 @@ import com.epsm.electricPowerSystemDispatcher.service.OutgoingMessageService;
 import com.epsm.electricPowerSystemDispatcher.service.PowerObjectService;
 import com.epsm.electricPowerSystemModel.model.bothConsumptionAndGeneration.Message;
 import com.epsm.electricPowerSystemModel.model.dispatch.Command;
+import com.epsm.electricPowerSystemModel.model.dispatch.Dispatcher;
 import com.epsm.electricPowerSystemModel.model.dispatch.Parameters;
 import com.epsm.electricPowerSystemModel.model.dispatch.State;
 import com.epsm.electricPowerSystemModel.model.generalModel.RealTimeOperations;
 
 @Component
-public class Dispatcher implements RealTimeOperations{
+public class DispatcherImpl implements Dispatcher, RealTimeOperations{
 	private ConnectionManager connectionManager;
 	private PowerObjectManagerStub objectManager;
 	private Set<Long> powerObjectsToSendingMessages;
@@ -29,13 +30,14 @@ public class Dispatcher implements RealTimeOperations{
 	private OutgoingMessageService outgoingMessageService;
 
 	@Autowired
-	public Dispatcher(TimeService timeService){
+	public DispatcherImpl(TimeService timeService){
 		connectionManager = new ConnectionManager(timeService);
 		objectManager = new PowerObjectManagerStub(timeService, this);
 		
-		logger = LoggerFactory.getLogger(Dispatcher.class);
+		logger = LoggerFactory.getLogger(DispatcherImpl.class);
 	}
 
+	@Override
 	public void establishConnection(Parameters parameters){
 		if(parameters == null){
 			logger.warn("Received null parameters.");
@@ -57,6 +59,7 @@ public class Dispatcher implements RealTimeOperations{
 		connectionManager.refreshTimeout(parameters.getPowerObjectId());
 	}
 
+	@Override
 	public void acceptState(State state){
 		if(state == null){
 			logger.warn("Received null state.");

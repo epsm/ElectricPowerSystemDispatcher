@@ -24,8 +24,8 @@ import com.epsm.electricPowerSystemModel.model.dispatch.Command;
 import com.epsm.electricPowerSystemModel.model.dispatch.Parameters;
 import com.epsm.electricPowerSystemModel.model.dispatch.State;
 
-public class DispatcherTest {
-	private Dispatcher dispatcher;
+public class DispatcherImplTest {
+	private DispatcherImpl dispatcher;
 	private ConnectionManager connectionManager;
 	private PowerObjectManagerStub objectManager;
 	private Parameters parameters;
@@ -39,7 +39,7 @@ public class DispatcherTest {
 	@Before
 	public void setUp(){
 		timeService = mock(TimeService.class);
-		dispatcher = new Dispatcher(timeService);
+		dispatcher = new DispatcherImpl(timeService);
 		connectionManager = spy(new ConnectionManager(timeService));
 		objectManager = spy(new PowerObjectManagerStub(timeService, dispatcher));
 		parameters = new ConsumerParametersStub(OBJECT_ID, LocalDateTime.MIN, LocalTime.MIN);

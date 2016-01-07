@@ -23,7 +23,7 @@ import com.epsm.electricPowerSystemModel.model.generation.PowerStationParameters
 
 public class PowerObjectManagerStubTest {
 	private TimeService timeService;
-	private Dispatcher dispatcher;
+	private DispatcherImpl dispatcher;
 	private PowerObjectManagerStub manager;
 	private PowerStationParameters powerStationParameters;
 	private ConsumerParametersStub consumerParameters;
@@ -36,7 +36,7 @@ public class PowerObjectManagerStubTest {
 	@Before
 	public void setUp(){
 		timeService = new TimeService();
-		dispatcher = mock(Dispatcher.class);
+		dispatcher = mock(DispatcherImpl.class);
 		manager = spy(new PowerObjectManagerStub(timeService, dispatcher));
 		powerStationParameters = new PowerStationParameters(POWER_OBJECT_ID, LocalDateTime.MIN,
 				LocalTime.MIN, 2);
