@@ -14,7 +14,7 @@ public class ConsumerClient{
 	@Autowired
 	private UrlRequestSender<ConsumptionPermissionStub> sender;
 	
-	public void sendConsumerPermissionToConsumer(ConsumptionPermissionStub permission) throws Exception{
+	public void sendConsumerPermissionToConsumer(ConsumptionPermissionStub permission){
 		Long consumerId = permission.getPowerObjectId();
 		String url = prepareUrl(consumerId);
 		

@@ -43,7 +43,7 @@ public class ConsumerControllerTest {
 	}
 	
 	@Test
-	public void testRegisterigConsumer() throws Exception{
+	public void registerigConsumerMethodAceptsConsumerParameters() throws Exception{
 		prepareParemetersAsJSONString();
 		
 		mockMvc.perform(
@@ -59,7 +59,7 @@ public class ConsumerControllerTest {
 	}
 	
 	@Test
-	public void testAcceptConsumerState() throws Exception {
+	public void acceptConsumerStateMethodAcceptsConsumerState() throws Exception {
 		prepareStateAsJSONString();
 		
 		mockMvc.perform(

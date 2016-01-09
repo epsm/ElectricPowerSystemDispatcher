@@ -48,7 +48,7 @@ public class PowerStationControllerTest {
 	}
 	
 	@Test
-	public void testRegisterPowerStation() throws Exception {
+	public void registerPowerStationMethodAcceptsPowerStationParameters() throws Exception {
 		prepareParemetersAsJSONString();
 		
 		mockMvc.perform(
@@ -69,7 +69,7 @@ public class PowerStationControllerTest {
 	}
 	
 	@Test
-	public void testAcceptPowerStationState() throws Exception {
+	public void acceptPowerStationStateMethodAcceptsPowerStationState() throws Exception {
 		prepareStateAsJSONString();
 		
 		mockMvc.perform(

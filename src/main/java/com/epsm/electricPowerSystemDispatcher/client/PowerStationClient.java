@@ -12,8 +12,7 @@ public class PowerStationClient{
 	@Autowired
 	private UrlRequestSender<PowerStationGenerationSchedule> sender;
 	
-	public void sendGenerationScheduleToPowerStation(PowerStationGenerationSchedule schedule)
-			throws Exception{
+	public void sendGenerationScheduleToPowerStation(PowerStationGenerationSchedule schedule){
 		Long powerStationId = schedule.getPowerObjectId();
 		String url = prepareUrlForSendingSchedule(powerStationId);
 		
