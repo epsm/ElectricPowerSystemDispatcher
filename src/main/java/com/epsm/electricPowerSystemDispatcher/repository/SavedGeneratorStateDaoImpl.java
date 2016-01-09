@@ -18,10 +18,10 @@ public class SavedGeneratorStateDaoImpl implements SavedGeneratorStateDao{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<SavedGeneratorState> getStatesByPowerStationNumber(int powerStationNumber) {
-		Query query = em.createQuery("SELECT c FROM SavedGeneratorState c WHERE c.station "
-				+ "= :powerStationNumber");
-		query.setParameter("powerStationNumber", powerStationNumber);
+	public List<SavedGeneratorState> getStatesByPowerStationNumber(long powerStationId) {
+		Query query = em.createQuery("SELECT c FROM SavedGeneratorState c WHERE c.powerStationId "
+				+ "= :powerStationId");
+		query.setParameter("powerStationId", powerStationId);
 		
 		return (List<SavedGeneratorState>)query.getResultList();
 	}

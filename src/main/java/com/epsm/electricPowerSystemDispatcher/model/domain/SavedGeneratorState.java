@@ -1,5 +1,6 @@
 package com.epsm.electricPowerSystemDispatcher.model.domain;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import javax.persistence.Column;
@@ -18,47 +19,46 @@ public class SavedGeneratorState{
 	@Column(name="id")
 	private long id;
 	
-	@Column(name="station")
-	private  int station;
+	@Column(name="powerStationId")
+	private  long powerStationId;
 	
 	@Column(name="generator_number")
 	private  int generatorNumber;
 	
 	@Column(name="generation")
-	private float generationInWM;
+	private float generationInMW;
 	
 	@Column(name="frequency")
 	private float frequency;
 
-	@Column(name="timestamp")
-	private LocalTime timeStamp;
+	@Column(name="simulationTimeStamp")
+	private LocalTime simulationTimeStamp;
+	
+	@Column(name="realTimeStamp")
+	protected LocalDateTime realTimeStamp;
 
-	public long getId() {
-		return id;
+	public long getPowerStationId() {
+		return powerStationId;
 	}
 
-	public int getStationNumber() {
-		return station;
-	}
-
-	public void setStationNumber(int station) {
-		this.station = station;
+	public void setPowerStationId(long powerStationId) {
+		this.powerStationId = powerStationId;
 	}
 
 	public int getGeneratorNumber() {
 		return generatorNumber;
 	}
 
-	public void setGeneratorNumber(int number) {
-		this.generatorNumber = number;
+	public void setGeneratorNumber(int generatorNumber) {
+		this.generatorNumber = generatorNumber;
 	}
 
 	public float getGenerationInWM() {
-		return generationInWM;
+		return generationInMW;
 	}
 
-	public void setGenerationInWM(float generationInWM) {
-		this.generationInWM = generationInWM;
+	public void setGenerationInMW(float generationInWM) {
+		this.generationInMW = generationInWM;
 	}
 
 	public float getFrequency() {
@@ -69,11 +69,23 @@ public class SavedGeneratorState{
 		this.frequency = frequency;
 	}
 
-	public LocalTime getTimeStamp() {
-		return timeStamp;
+	public LocalTime getSimulationTimeStamp() {
+		return simulationTimeStamp;
 	}
 
-	public void setTimeStamp(LocalTime timeStamp) {
-		this.timeStamp = timeStamp;
+	public void setSimulationTimeStamp(LocalTime simulationTimeStamp) {
+		this.simulationTimeStamp = simulationTimeStamp;
+	}
+
+	public LocalDateTime getRealTimeStamp() {
+		return realTimeStamp;
+	}
+
+	public void setRealTimeStamp(LocalDateTime realTimeStamp) {
+		this.realTimeStamp = realTimeStamp;
+	}
+
+	public long getId() {
+		return id;
 	}
 }
