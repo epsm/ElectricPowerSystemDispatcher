@@ -12,7 +12,7 @@ import com.epsm.electricPowerSystemModel.util.UrlRequestSender;
 public class ConsumerClient{
 	
 	@Autowired
-	private UrlRequestSender sender;
+	private UrlRequestSender<ConsumptionPermissionStub> sender;
 	
 	public void sendConsumerPermissionToConsumer(ConsumptionPermissionStub permission) throws Exception{
 		Long consumerId = permission.getPowerObjectId();

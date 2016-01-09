@@ -10,7 +10,7 @@ import com.epsm.electricPowerSystemModel.util.UrlRequestSender;
 public class PowerStationClient{
 	
 	@Autowired
-	private UrlRequestSender sender;
+	private UrlRequestSender<PowerStationGenerationSchedule> sender;
 	
 	public void sendGenerationScheduleToPowerStation(PowerStationGenerationSchedule schedule)
 			throws Exception{
