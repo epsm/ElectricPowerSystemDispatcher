@@ -5,11 +5,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.epsm.electricPowerSystemDispatcher.service.IncomingMessageService;
 import com.epsm.electricPowerSystemModel.model.generation.PowerStationParameters;
 import com.epsm.electricPowerSystemModel.model.generation.PowerStationState;
 
+@RestController
 @RequestMapping("/api/powerstation")
 public class PowerStationController {
 	
@@ -17,7 +19,7 @@ public class PowerStationController {
 	private IncomingMessageService service;
 	
 	@RequestMapping(value="/esatblishconnection", method = RequestMethod.POST)
-	public @ResponseBody void registerPowerStation(@RequestBody PowerStationParameters parameters){
+	public @ResponseBody void establishConnection(@RequestBody PowerStationParameters parameters){
 		service.establishConnectionWithPowerStation(parameters);
 	}
 	
