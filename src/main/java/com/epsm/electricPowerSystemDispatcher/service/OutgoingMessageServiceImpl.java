@@ -28,15 +28,18 @@ public class OutgoingMessageServiceImpl implements OutgoingMessageService{
 	
 	@Override
 	public void sendCommand(Command command) {
-		if(command instanceof ConsumptionPermissionStub){
+		if(command == null){
+			String message = "Command must not be null.";
+			throw new IllegalArgumentException(message);
+		}else if(command instanceof ConsumptionPermissionStub){
 			permissionSender.sendObjectInJsonToUrlWithPOST(
 					consumerApi, (ConsumptionPermissionStub) command);
 		}else if(command instanceof PowerStationGenerationSchedule){
 			scheduleSender.sendObjectInJsonToUrlWithPOST(
 					powerStationApi, (PowerStationGenerationSchedule) command);
 		}else{
-			String message = String.format("Unsuported type of Command: ",
-					command.getClass().getName());
+			String message = String.format("Unsuported type of Command: %s.",
+					command.getClass().getSimpleName());
 			throw new IllegalArgumentException(message);
 		}
 	}
