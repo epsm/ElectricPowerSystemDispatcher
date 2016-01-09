@@ -1,6 +1,7 @@
 package com.epsm.electricPowerSystemDispatcher.client;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
 
@@ -14,17 +15,21 @@ public class ConsumerClient{
 	@Autowired
 	private UrlRequestSender<ConsumptionPermissionStub> sender;
 	
+	@Value("${api.consumer.command}")
+	private String consumerApi;
+	
 	public void sendConsumerPermissionToConsumer(ConsumptionPermissionStub permission){
-		Long consumerId = permission.getPowerObjectId();
-		String url = prepareUrl(consumerId);
-		
-		sender.sendObjectInJsonToUrlWithPOST(url, permission);
+		String url = prepareUrl(permission);
+		sendPermission(url, permission);
 	}
 	
-	private String prepareUrl(long consumerId){
-		String host = "http://localhost:8080/";
-		String apiUrl ="epsm/api/consumer/subscribe/";
+	private String prepareUrl(ConsumptionPermissionStub permission){
+		Long consumerId = permission.getPowerObjectId();
 		
-		return host + apiUrl + consumerId;
+		return consumerApi + consumerId;
+	}
+	
+	private void sendPermission(String url, ConsumptionPermissionStub permission){
+		sender.sendObjectInJsonToUrlWithPOST(url, permission);
 	}
 }

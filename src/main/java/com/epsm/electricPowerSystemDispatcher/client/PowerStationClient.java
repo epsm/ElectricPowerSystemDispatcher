@@ -1,6 +1,7 @@
 package com.epsm.electricPowerSystemDispatcher.client;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.epsm.electricPowerSystemModel.model.generation.PowerStationGenerationSchedule;
@@ -12,17 +13,21 @@ public class PowerStationClient{
 	@Autowired
 	private UrlRequestSender<PowerStationGenerationSchedule> sender;
 	
+	@Value("${api.powerStation.command}")
+	private String powerStationApi;
+	
 	public void sendGenerationScheduleToPowerStation(PowerStationGenerationSchedule schedule){
-		Long powerStationId = schedule.getPowerObjectId();
-		String url = prepareUrlForSendingSchedule(powerStationId);
-		
-		sender.sendObjectInJsonToUrlWithPOST(url, schedule);
+		String url = prepareUrl(schedule);
+		sendSchedule(url, schedule);
 	}
 	
-	private String prepareUrlForSendingSchedule(long powerStationId){
-		String host = "http://localhost:8080/";
-		String apiUrl ="epsm/api/powerstation/acceptschedule";
+	private String prepareUrl(PowerStationGenerationSchedule schedule){
+		Long powerStationId = schedule.getPowerObjectId();
 		
-		return host + apiUrl + powerStationId;
+		return powerStationApi + powerStationId;
+	}
+	
+	private void sendSchedule(String url, PowerStationGenerationSchedule schedule){
+		sender.sendObjectInJsonToUrlWithPOST(url, schedule);
 	}
 }

@@ -1,30 +1,24 @@
 package com.epsm.electricPowerSystemDispatcher.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
+import com.epsm.electricPowerSystemDispatcher.client.ConsumerClient;
+import com.epsm.electricPowerSystemDispatcher.client.PowerStationClient;
 import com.epsm.electricPowerSystemModel.model.consumption.ConsumptionPermissionStub;
 import com.epsm.electricPowerSystemModel.model.dispatch.Command;
 import com.epsm.electricPowerSystemModel.model.generation.PowerStationGenerationSchedule;
-import com.epsm.electricPowerSystemModel.util.UrlRequestSender;
 
 @Service
 @PropertySource("classpath:application.properties")
 public class OutgoingMessageServiceImpl implements OutgoingMessageService{
 
 	@Autowired
-	private UrlRequestSender<ConsumptionPermissionStub> permissionSender;
+	private ConsumerClient consumerClient;
 	
 	@Autowired
-	private UrlRequestSender<PowerStationGenerationSchedule> scheduleSender;
-	
-	@Value("${api.powerStation}")
-	private String powerStationApi;
-	
-	@Value("${api.consumer}")
-	private String consumerApi;
+	private PowerStationClient powerStationClient;
 	
 	@Override
 	public void sendCommand(Command command) {
@@ -32,11 +26,10 @@ public class OutgoingMessageServiceImpl implements OutgoingMessageService{
 			String message = "Command must not be null.";
 			throw new IllegalArgumentException(message);
 		}else if(command instanceof ConsumptionPermissionStub){
-			permissionSender.sendObjectInJsonToUrlWithPOST(
-					consumerApi, (ConsumptionPermissionStub) command);
+			consumerClient.sendConsumerPermissionToConsumer((ConsumptionPermissionStub) command);
 		}else if(command instanceof PowerStationGenerationSchedule){
-			scheduleSender.sendObjectInJsonToUrlWithPOST(
-					powerStationApi, (PowerStationGenerationSchedule) command);
+			powerStationClient.sendGenerationScheduleToPowerStation(
+					(PowerStationGenerationSchedule) command);
 		}else{
 			String message = String.format("Unsuported type of Command: %s.",
 					command.getClass().getSimpleName());

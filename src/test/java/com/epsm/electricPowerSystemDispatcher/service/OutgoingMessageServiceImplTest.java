@@ -13,6 +13,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.*;
 
+import com.epsm.electricPowerSystemDispatcher.client.ConsumerClient;
+import com.epsm.electricPowerSystemDispatcher.client.PowerStationClient;
 import com.epsm.electricPowerSystemModel.model.consumption.ConsumptionPermissionStub;
 import com.epsm.electricPowerSystemModel.model.dispatch.Command;
 import com.epsm.electricPowerSystemModel.model.generation.PowerStationGenerationSchedule;
@@ -27,10 +29,10 @@ public class OutgoingMessageServiceImplTest {
 	private OutgoingMessageServiceImpl service;
 	
 	@Mock
-	private UrlRequestSender<ConsumptionPermissionStub> permissionSender;
+	private ConsumerClient consumerClient;
 	
 	@Mock
-	private UrlRequestSender<PowerStationGenerationSchedule> scheduleSender;
+	private PowerStationClient powerStationClient;
 	
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();
@@ -49,7 +51,7 @@ public class OutgoingMessageServiceImplTest {
 		
 		service.sendCommand(schedule);
 		
-		verify(scheduleSender).sendObjectInJsonToUrlWithPOST(any(), eq(schedule));
+		verify(powerStationClient).sendGenerationScheduleToPowerStation(schedule);
 	}
 	
 	@Test
@@ -58,7 +60,7 @@ public class OutgoingMessageServiceImplTest {
 		
 		service.sendCommand(permission);
 		
-		verify(permissionSender).sendObjectInJsonToUrlWithPOST(any(), eq(permission));
+		verify(consumerClient).sendConsumerPermissionToConsumer(permission);
 	}
 	
 	@Test
