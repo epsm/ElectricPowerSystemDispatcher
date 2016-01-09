@@ -18,10 +18,10 @@ public class SavedConsumerStateDaoImpl implements SavedConsumerStateDao{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<SavedConsumerState> getStatesByNumber(int consumerNumber) {
-		Query query = em.createQuery("SELECT c FROM SavedConsumerState c WHERE c.consumerNumber "
-				+ "= :consumerNumber");
-		query.setParameter("consumerNumber", consumerNumber);
+	public List<SavedConsumerState> getStatesByNumber(long consumerId) {
+		Query query = em.createQuery("SELECT c FROM SavedConsumerState c WHERE c.consumerId "
+				+ "= :consumerId");
+		query.setParameter("consumerId", consumerId);
 		
 		return (List<SavedConsumerState>)query.getResultList();
 	}

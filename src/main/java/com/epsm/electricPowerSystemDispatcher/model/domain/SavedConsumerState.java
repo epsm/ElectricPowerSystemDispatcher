@@ -1,5 +1,6 @@
 package com.epsm.electricPowerSystemDispatcher.model.domain;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import javax.persistence.Column;
@@ -17,21 +18,24 @@ public class SavedConsumerState{
 	@Column(name="id")
 	private long id;
 	
-	@Column(name="consumer_number")
-	private int consumerNumber;
+	@Column(name="consumerId")
+	private long consumerId;
 	
 	@Column(name="load")
 	private float load;
 	
-	@Column(name="timestamp")
-	private LocalTime timeStamp;
+	@Column(name="simulationTimeStamp")
+	private LocalTime simulationTimeStamp;
+	
+	@Column(name="realTimeStamp")
+	protected LocalDateTime realTimeStamp;
 
-	public int getConsumerNumber() {
-		return consumerNumber;
+	public long getConsumerId() {
+		return consumerId;
 	}
 
-	public void setNumber(int number) {
-		this.consumerNumber = number;
+	public void setConsumerId(long consumerId) {
+		this.consumerId = consumerId;
 	}
 
 	public float getLoad() {
@@ -42,12 +46,20 @@ public class SavedConsumerState{
 		this.load = load;
 	}
 
-	public LocalTime getTimeStamp() {
-		return timeStamp;
+	public LocalTime getSimulationTimeStamp() {
+		return simulationTimeStamp;
 	}
 
-	public void setTimeStamp(LocalTime timeStamp) {
-		this.timeStamp = timeStamp;
+	public void setSimulationTimeStamp(LocalTime simulationTimeStamp) {
+		this.simulationTimeStamp = simulationTimeStamp;
+	}
+
+	public LocalDateTime getRealTimeStamp() {
+		return realTimeStamp;
+	}
+
+	public void setRealTimeStamp(LocalDateTime realTimeStamp) {
+		this.realTimeStamp = realTimeStamp;
 	}
 
 	public long getId() {
