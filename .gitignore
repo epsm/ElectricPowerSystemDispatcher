@@ -2,6 +2,7 @@ bin/
 target/
 build/
 RemoteSystemsTempFiles/
+logs/
 .settings/
 .metadata/
 .classpath

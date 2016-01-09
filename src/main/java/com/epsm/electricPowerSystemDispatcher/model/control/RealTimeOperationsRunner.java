@@ -12,7 +12,7 @@ public class RealTimeOperationsRunner{
 	
 	public void runDispatcher(RealTimeOperations object){
 		if(object == null){
-			logger.error("RealTimeOperationsRunner: attempt to run null object.");
+			logger.error("Attempt to run null object.");
 			throw new IllegalArgumentException("RealTimeOperationsRunner: object must not"
 					+ " be null.");
 		}
@@ -20,7 +20,7 @@ public class RealTimeOperationsRunner{
 		this.object = object;
 		runObject();
 		
-		logger.info("RealTimeOperationsRunner run.");
+		logger.info("{} run.", object);
 	}
 	
 	private void runObject(){
@@ -38,6 +38,9 @@ public class RealTimeOperationsRunner{
 			
 			while(true){
 				object.doRealTimeDependingOperations();
+				
+				logger.debug("Step performed.");
+				
 				pause();
 			}
 		}

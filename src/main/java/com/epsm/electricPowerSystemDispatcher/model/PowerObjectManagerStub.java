@@ -23,11 +23,15 @@ public class PowerObjectManagerStub{
 	private Logger logger;
 	
 	public PowerObjectManagerStub(TimeService timeService, DispatcherImpl dispatcher) {
+		logger = LoggerFactory.getLogger(PowerObjectManagerStub.class);
+		
 		if(timeService == null){
 			String message = "PowerObjectManagerStub constructor: timeService can't be null.";
+			logger.debug("Constructor: timeService can't be null.");
 			throw new IllegalArgumentException(message);
 		}else if(dispatcher == null){
 			String message = "PowerObjectManagerStub constructor: dispatcher can't be null.";
+			logger.debug("Constructor: dispatcher can't be null.");
 			throw new IllegalArgumentException(message);
 		}
 		
@@ -35,7 +39,6 @@ public class PowerObjectManagerStub{
 		this.dispatcher = dispatcher;
 		storedParameters = new ConcurrentHashMap<Long, Parameters>();
 		calculator = new PowerStationGenerationScheduleCalculatorStub(timeService);
-		logger = LoggerFactory.getLogger(PowerObjectManagerStub.class);
 	}
 	
 	public boolean rememberObjectIfItTypeIsKnown(Parameters parameters){
@@ -43,9 +46,11 @@ public class PowerObjectManagerStub{
 		
 		if(parameters instanceof PowerStationParameters){
 			storedParameters.putIfAbsent(powerObjectId, parameters);
+			logger.debug("{} saved.", parameters);
 			return true;
 		}else if(parameters instanceof ConsumerParametersStub){
 			storedParameters.putIfAbsent(powerObjectId, parameters);
+			logger.debug("{} saved.", parameters);
 			return true;
 		}
 
@@ -68,13 +73,14 @@ public class PowerObjectManagerStub{
 		PowerStationGenerationSchedule schedule = calculator.getSchedule(powerStationId);
 		dispatcher.sendCommand(schedule);
 		
-		logger.info("Schedule sent to power station#{}." + powerStationId);
+		logger.debug("Request to sending {} to power station#{}.", schedule, powerStationId);
 	}
 	
 	private void sendMessageToConsumer(long consumerId) {
 		ConsumptionPermissionStub permission = new ConsumptionPermissionStub(
 				consumerId, timeService.getCurrentTime(), LocalTime.MIN);
-		
 		dispatcher.sendCommand(permission);
+		
+		logger.debug("Request to sending {} to consumer#{}.", permission, consumerId);
 	}
 }

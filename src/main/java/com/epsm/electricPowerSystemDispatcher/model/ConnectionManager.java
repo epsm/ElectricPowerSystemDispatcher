@@ -13,11 +13,10 @@ public class ConnectionManager {
 	private Set<Long> servedPowerObjects;
 	
 	public ConnectionManager(TimeService timeService){
-		
 		activeConnectionsTimer = new MultiTimer(timeService,
-				GlobalConstants.CONNECTION_TIMEOUT_IN_SECONDS);
+				Constants.CONNECTION_TIMEOUT_IN_SECONDS);
 		servedConnectionsTimer = new MultiTimer(timeService,
-				GlobalConstants.PAUSE_BETWEEN_SENDING_MESSAGES_IN_SECONDS);
+				Constants.PAUSE_BETWEEN_SENDING_MESSAGES_IN_SECONDS);
 	}
 
 	public void refreshTimeout(long powerObjectId){
