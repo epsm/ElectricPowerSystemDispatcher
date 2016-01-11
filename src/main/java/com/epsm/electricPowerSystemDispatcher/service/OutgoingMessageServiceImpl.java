@@ -1,7 +1,6 @@
 package com.epsm.electricPowerSystemDispatcher.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import com.epsm.electricPowerSystemDispatcher.client.ConsumerClient;
@@ -11,7 +10,6 @@ import com.epsm.electricPowerSystemModel.model.dispatch.Command;
 import com.epsm.electricPowerSystemModel.model.generation.PowerStationGenerationSchedule;
 
 @Service
-@PropertySource("classpath:application.properties")
 public class OutgoingMessageServiceImpl implements OutgoingMessageService{
 
 	@Autowired

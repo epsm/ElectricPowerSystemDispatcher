@@ -5,8 +5,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
-import org.springframework.stereotype.Component;
 
 import com.epsm.electricPowerSystemDispatcher.service.OutgoingMessageService;
 import com.epsm.electricPowerSystemDispatcher.service.PowerObjectService;
@@ -18,8 +16,6 @@ import com.epsm.electricPowerSystemModel.model.dispatch.State;
 import com.epsm.electricPowerSystemModel.model.generalModel.RealTimeOperations;
 import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
 
-@Import(TimeService.class)
-@Component
 public class DispatcherImpl implements Dispatcher, RealTimeOperations{
 	private ConnectionManager connectionManager;
 	private PowerObjectManagerStub objectManager;
@@ -118,7 +114,7 @@ public class DispatcherImpl implements Dispatcher, RealTimeOperations{
 		outgoingMessageService.sendCommand(command);
 		refreshSentMessageTimerForPowerObject(command.getPowerObjectId());
 		
-		logger.info("{} sent to object#{}.", command.getClass().getSimpleName(),
+		logger.info("Sent {} to power object#{}.", command.getClass().getSimpleName(),
 				command.getPowerObjectId());
 	}
 

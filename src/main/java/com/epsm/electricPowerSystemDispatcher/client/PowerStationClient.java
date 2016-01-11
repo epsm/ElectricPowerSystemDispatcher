@@ -9,7 +9,7 @@ import com.epsm.electricPowerSystemModel.model.generation.PowerStationGeneration
 @Component
 public class PowerStationClient extends AbstractClient<PowerStationGenerationSchedule>{
 
-	@Value("${api.powerStation.command}")
+	@Value("${api.powerstation.command}")
 	private String api;
 	
 	public void sendGenerationScheduleToPowerStation(PowerStationGenerationSchedule schedule){
