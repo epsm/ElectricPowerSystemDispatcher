@@ -10,13 +10,14 @@ import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
 
 @RestController
 @RequestMapping("/")
-public class IndicatorController {
+public class IndicatorController{
 	
 	@Autowired
 	private TimeService timeService;
 	
 	@RequestMapping(method = RequestMethod.GET)
-	public @ResponseBody String acceptConsumptionPermission(){
-		return String.format("date and time on dispatcher server: %s.", timeService.getCurrentTime());
+	public @ResponseBody String indicate(){
+		return String.format("date and time on dispatcher server: %s.",
+				timeService.getCurrentTime());
 	}
 }
