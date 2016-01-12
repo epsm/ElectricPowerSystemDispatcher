@@ -5,13 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.ConsumerState;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.PowerStationState;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.State;
 import com.epsm.electricPowerSystemDispatcher.model.domain.SavedConsumerState;
 import com.epsm.electricPowerSystemDispatcher.model.domain.SavedGeneratorState;
 import com.epsm.electricPowerSystemDispatcher.repository.SavedConsumerStateDao;
 import com.epsm.electricPowerSystemDispatcher.repository.SavedGeneratorStateDao;
-import com.epsm.electricPowerSystemModel.model.consumption.ConsumerState;
-import com.epsm.electricPowerSystemModel.model.dispatch.State;
-import com.epsm.electricPowerSystemModel.model.generation.PowerStationState;
 
 @Service
 public class PowerObjectServiceImpl implements PowerObjectService{

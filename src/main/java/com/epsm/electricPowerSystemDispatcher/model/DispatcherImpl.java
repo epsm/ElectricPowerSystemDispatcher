@@ -6,15 +6,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.Command;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.Dispatcher;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.Message;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.Parameters;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.RealTimeOperations;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.State;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.TimeService;
 import com.epsm.electricPowerSystemDispatcher.service.OutgoingMessageService;
 import com.epsm.electricPowerSystemDispatcher.service.PowerObjectService;
-import com.epsm.electricPowerSystemModel.model.bothConsumptionAndGeneration.Message;
-import com.epsm.electricPowerSystemModel.model.dispatch.Command;
-import com.epsm.electricPowerSystemModel.model.dispatch.Dispatcher;
-import com.epsm.electricPowerSystemModel.model.dispatch.Parameters;
-import com.epsm.electricPowerSystemModel.model.dispatch.State;
-import com.epsm.electricPowerSystemModel.model.generalModel.RealTimeOperations;
-import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
 
 public class DispatcherImpl implements Dispatcher, RealTimeOperations{
 	private ConnectionManager connectionManager;

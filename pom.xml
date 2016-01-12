@@ -76,16 +76,10 @@
 
 		<!-- servlet -->
     	<dependency>
-   			<groupId>javax.servlet</groupId>
-   			<artifactId>javax.servlet-api</artifactId>
-    		<version>3.0.1</version>
-		</dependency>
-
-		<!-- EPSM, installed to local repository -->	
-		<dependency>
-			<groupId>com.epsm.electricPowerSystemModel</groupId>
-			<artifactId>epsm</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+			<scope>provided</scope>
 		</dependency>
 		
 		<!-- JSON -->
@@ -124,7 +118,7 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>1.4.190</version>
-			<!-- scope>test</scope -->
+<!-- scope>test</scope -->
 		</dependency>
 		<dependency>
 			<groupId>com.github.springtestdbunit</groupId>

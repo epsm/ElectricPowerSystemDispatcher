@@ -8,9 +8,9 @@ import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.GeneratorState;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.PowerStationState;
 import com.epsm.electricPowerSystemDispatcher.model.domain.SavedGeneratorState;
-import com.epsm.electricPowerSystemModel.model.generation.GeneratorState;
-import com.epsm.electricPowerSystemModel.model.generation.PowerStationState;
 
 @Component
 public class PowerStationStateConverter {

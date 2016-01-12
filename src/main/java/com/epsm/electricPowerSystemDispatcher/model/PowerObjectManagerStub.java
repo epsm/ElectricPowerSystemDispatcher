@@ -7,12 +7,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.epsm.electricPowerSystemModel.model.consumption.ConsumerParametersStub;
-import com.epsm.electricPowerSystemModel.model.consumption.ConsumptionPermissionStub;
-import com.epsm.electricPowerSystemModel.model.dispatch.Parameters;
-import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
-import com.epsm.electricPowerSystemModel.model.generation.PowerStationGenerationSchedule;
-import com.epsm.electricPowerSystemModel.model.generation.PowerStationParameters;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.ConsumerParametersStub;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.ConsumptionPermissionStub;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.Parameters;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.PowerStationGenerationSchedule;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.PowerStationParameters;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.TimeService;
 
 //It just a stub. More complex model see com.epsm.electricPowerSystemModel.model.*;
 public class PowerObjectManagerStub{

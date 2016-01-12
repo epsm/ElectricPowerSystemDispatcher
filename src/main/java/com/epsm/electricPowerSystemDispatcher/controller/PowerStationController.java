@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.PowerStationParameters;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.PowerStationState;
 import com.epsm.electricPowerSystemDispatcher.service.IncomingMessageService;
-import com.epsm.electricPowerSystemModel.model.generation.PowerStationParameters;
-import com.epsm.electricPowerSystemModel.model.generation.PowerStationState;
 
 @RestController
 @RequestMapping("/api/powerstation")

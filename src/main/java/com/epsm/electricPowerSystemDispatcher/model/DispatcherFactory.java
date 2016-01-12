@@ -6,10 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import com.epsm.electricPowerSystemDispatcher.model.DispatcherImpl;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.Dispatcher;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.TimeService;
 import com.epsm.electricPowerSystemDispatcher.model.control.RealTimeOperationsRunner;
-import com.epsm.electricPowerSystemModel.model.dispatch.Dispatcher;
-import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
 
 @Component
 public class DispatcherFactory {

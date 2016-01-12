@@ -3,11 +3,11 @@ package com.epsm.electricPowerSystemDispatcher.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.epsm.electricPowerSystemModel.model.consumption.ConsumerParametersStub;
-import com.epsm.electricPowerSystemModel.model.consumption.ConsumerState;
-import com.epsm.electricPowerSystemModel.model.dispatch.Dispatcher;
-import com.epsm.electricPowerSystemModel.model.generation.PowerStationParameters;
-import com.epsm.electricPowerSystemModel.model.generation.PowerStationState;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.ConsumerParametersStub;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.ConsumerState;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.Dispatcher;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.PowerStationParameters;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.PowerStationState;
 
 @Service
 public class IncomingMessageServiceImpl implements IncomingMessageService{

@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 
 import com.epsm.electricPowerSystemDispatcher.client.ConsumerClient;
 import com.epsm.electricPowerSystemDispatcher.client.PowerStationClient;
-import com.epsm.electricPowerSystemModel.model.consumption.ConsumptionPermissionStub;
-import com.epsm.electricPowerSystemModel.model.dispatch.Command;
-import com.epsm.electricPowerSystemModel.model.generation.PowerStationGenerationSchedule;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.Command;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.ConsumptionPermissionStub;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.PowerStationGenerationSchedule;
 
 @Service
 public class OutgoingMessageServiceImpl implements OutgoingMessageService{

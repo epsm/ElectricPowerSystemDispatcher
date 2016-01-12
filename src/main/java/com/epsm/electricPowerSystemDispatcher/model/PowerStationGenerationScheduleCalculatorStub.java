@@ -2,10 +2,10 @@ package com.epsm.electricPowerSystemDispatcher.model;
 
 import java.time.LocalTime;
 
-import com.epsm.electricPowerSystemModel.model.bothConsumptionAndGeneration.LoadCurve;
-import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
-import com.epsm.electricPowerSystemModel.model.generation.GeneratorGenerationSchedule;
-import com.epsm.electricPowerSystemModel.model.generation.PowerStationGenerationSchedule;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.GeneratorGenerationSchedule;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.LoadCurve;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.PowerStationGenerationSchedule;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.TimeService;
 
 //It is just stub. More complex model see com.epsm.electricPowerSystemModel.model.*;
 public class PowerStationGenerationScheduleCalculatorStub {

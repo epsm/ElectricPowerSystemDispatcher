@@ -3,7 +3,7 @@ package com.epsm.electricPowerSystemDispatcher.model.control;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.epsm.electricPowerSystemModel.model.generalModel.RealTimeOperations;
+import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.RealTimeOperations;
 
 public class RealTimeOperationsRunner{
 	private RealTimeOperations object;
