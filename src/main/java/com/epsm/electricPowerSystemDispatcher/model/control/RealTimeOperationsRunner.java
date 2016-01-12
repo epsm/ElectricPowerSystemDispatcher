@@ -20,7 +20,7 @@ public class RealTimeOperationsRunner{
 		this.object = object;
 		runObject();
 		
-		logger.info("{} run.", object);
+		logger.info("{} run.", object.getClass().getSimpleName());
 	}
 	
 	private void runObject(){

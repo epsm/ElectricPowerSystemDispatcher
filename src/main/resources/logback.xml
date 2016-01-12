@@ -28,11 +28,11 @@
     	</rollingPolicy>
 	</appender>
 
-	<logger name="com.epsm.electricPowerSystemDispatcher.model" level="INFO" additivity="false">
+	<logger name="com.epsm.electricPowerSystemDispatcher.model" level="DEBUG" additivity="false">
 		<appender-ref ref="Application" />
 	</logger>
 	
-	<logger name="com.epsm.electricPowerSystemDispatcher" level="INFO" additivity="false">
+	<logger name="com.epsm.electricPowerSystemDispatcher" level="DEBUG" additivity="false">
 		<appender-ref ref="System" />
 	</logger>
 
