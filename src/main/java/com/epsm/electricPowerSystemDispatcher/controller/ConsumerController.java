@@ -27,6 +27,12 @@ public class ConsumerController {
 		service.establishConnectionWithConsumer(parameters);
 	}
 	
+	/*@RequestMapping(value="/esatblishconnection", method = RequestMethod.POST)
+	public @ResponseBody void establishConnection(@RequestBody String parameters){
+		System.out.println("epsd cons est got: " + parameters);
+	}*/
+	
+	
 	@RequestMapping(value="/acceptstate", method=RequestMethod.POST)
 	public @ResponseBody void acceptConsumerState(@RequestBody ConsumerState state){
 		logger.debug("Received {}.", state);

@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
 
+import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
+
 @Configuration
 @ComponentScan("com.epsm.electricPowerSystemDispatcher")		
 public class ApplicationConfig{

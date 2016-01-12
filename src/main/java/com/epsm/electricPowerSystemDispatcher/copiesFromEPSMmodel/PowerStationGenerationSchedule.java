@@ -5,7 +5,9 @@ import java.time.LocalTime;
 import java.util.Set;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+@JsonSerialize(using = PowerStationGenerationScheduleJsonSerializer.class)
 @JsonDeserialize(using = PowerStationGenerationScheduleJsonDeserializer.class)
 public class PowerStationGenerationSchedule extends Command{
 	private MessageInclusionsContainer<GeneratorGenerationSchedule> schedules;

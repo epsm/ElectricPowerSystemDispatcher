@@ -4,7 +4,9 @@ import java.time.LocalTime;
 import java.util.Arrays;
 
 import com.epsm.electricPowerSystemDispatcher.model.Constants;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+@JsonSerialize(using = LoadCurveJsonSerializer.class)
 public final class LoadCurve{
 	private float[] loadByHoursInMW;
 	private LocalTime requestedTime;

@@ -2,6 +2,7 @@ package com.epsm.electricPowerSystemDispatcher.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.ConsumerParametersStub;
 import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.ConsumerState;
@@ -9,6 +10,7 @@ import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.Dispatcher;
 import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.PowerStationParameters;
 import com.epsm.electricPowerSystemDispatcher.copiesFromEPSMmodel.PowerStationState;
 
+@Transactional
 @Service
 public class IncomingMessageServiceImpl implements IncomingMessageService{
 
