@@ -12,7 +12,7 @@
 		</encoder>
 
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      		<fileNamePattern>/home/anonimous/programming/projects/current/ElectricPowerSystemDispatcher/logs/Application.%d{dd-MM-yyy}.log.zip</fileNamePattern>
+      		<fileNamePattern>/home/anonimous/programming/projects/current/epsd-core/logs/Application.%d{dd-MM-yyy}.log.zip</fileNamePattern>
       		<maxHistory>7</maxHistory>
     	</rollingPolicy>
 	</appender>
@@ -23,16 +23,16 @@
 		</encoder>
 
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      		<fileNamePattern>/home/anonimous/programming/projects/current/ElectricPowerSystemDispatcher/logs/System.%d{dd-MM-yyy}.log.zip</fileNamePattern>
+      		<fileNamePattern>/home/anonimous/programming/projects/current/epsd-core/logs/System.%d{dd-MM-yyy}.log.zip</fileNamePattern>
       		<maxHistory>7</maxHistory>
     	</rollingPolicy>
 	</appender>
 
-	<logger name="com.epsm.electricPowerSystemDispatcher.model" level="INFO" additivity="false">
+	<logger name="com.epsm.epsdCore.model" level="INFO" additivity="false">
 		<appender-ref ref="Application" />
 	</logger>
 	
-	<logger name="com.epsm.electricPowerSystemDispatcher" level="INFO" additivity="false">
+	<logger name="com.epsm.epsdCore" level="INFO" additivity="false">
 		<appender-ref ref="System" />
 	</logger>
 
