@@ -15,12 +15,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.epsm.electricPowerSystemModel.model.consumption.ConsumerParametersStub;
-import com.epsm.electricPowerSystemModel.model.consumption.ConsumptionPermissionStub;
-import com.epsm.electricPowerSystemModel.model.dispatch.Parameters;
-import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
-import com.epsm.electricPowerSystemModel.model.generation.PowerStationGenerationSchedule;
-import com.epsm.electricPowerSystemModel.model.generation.PowerStationParameters;
+import com.epsm.epsmCore.model.consumption.ConsumerParametersStub;
+import com.epsm.epsmCore.model.consumption.ConsumptionPermissionStub;
+import com.epsm.epsmCore.model.dispatch.Parameters;
+import com.epsm.epsmCore.model.generalModel.TimeService;
+import com.epsm.epsmCore.model.generation.PowerStationGenerationSchedule;
+import com.epsm.epsmCore.model.generation.PowerStationParameters;
 
 public class PowerObjectManagerStubTest {
 	private TimeService timeService;

@@ -9,7 +9,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
+import com.epsm.epsmCore.model.generalModel.TimeService;
 
 public class MiltiTimerTest {
 	private TimeService timeService; 
@@ -24,6 +24,11 @@ public class MiltiTimerTest {
 	
 		when(timeService.getCurrentTime()).thenReturn(LocalDateTime.of(2000, 01, 01, 00, 00));
 		startTestTime = timeService.getCurrentTime();
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void exceptionInConstructorIfTimeserviceIsNull(){
+		new MultiTimer(null, 1);
 	}
 	
 	@Test

@@ -4,36 +4,44 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.epsm.epsdCore.service.OutgoingMessageService;
-import com.epsm.epsdCore.service.PowerObjectService;
-import com.epsm.electricPowerSystemModel.model.bothConsumptionAndGeneration.Message;
-import com.epsm.electricPowerSystemModel.model.dispatch.Command;
-import com.epsm.electricPowerSystemModel.model.dispatch.Dispatcher;
-import com.epsm.electricPowerSystemModel.model.dispatch.Parameters;
-import com.epsm.electricPowerSystemModel.model.dispatch.State;
-import com.epsm.electricPowerSystemModel.model.generalModel.RealTimeOperations;
-import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
+import com.epsm.epsmCore.model.bothConsumptionAndGeneration.Message;
+import com.epsm.epsmCore.model.dispatch.Command;
+import com.epsm.epsmCore.model.dispatch.Dispatcher;
+import com.epsm.epsmCore.model.dispatch.Parameters;
+import com.epsm.epsmCore.model.dispatch.State;
+import com.epsm.epsmCore.model.generalModel.RealTimeOperations;
+import com.epsm.epsmCore.model.generalModel.TimeService;
 
 public class DispatcherImpl implements Dispatcher, RealTimeOperations{
 	private ConnectionManager connectionManager;
 	private PowerObjectManagerStub objectManager;
 	private Set<Long> powerObjectsToSendingMessages;
+	private StateSaver saver;
+	private ObjectsConnector connector;
 	private Logger logger;
 
-	@Autowired
-	private PowerObjectService powerObjectService;
-	
-	@Autowired
-	private OutgoingMessageService outgoingMessageService;
-
-	@Autowired
-	public DispatcherImpl(TimeService timeService){
+	public DispatcherImpl(TimeService timeService, StateSaver saver, ObjectsConnector connector){
+		logger = LoggerFactory.getLogger(DispatcherImpl.class);
+		
+		if(timeService == null){
+			logger.error("Null TimeService in constructor.");
+			throw new IllegalArgumentException("DispatcherImpl constructor:"
+					+ " timeService must not be null.");
+		}else if(saver == null){
+			logger.error("Null StateSaver in constructor.");
+			throw new IllegalArgumentException("DispatcherImpl constructor:"
+					+ " saver must not be null.");
+		}else if(connector == null){
+			logger.error("Null ObjectsConnector in constructor.");
+			throw new IllegalArgumentException("DispatcherImpl constructor:"
+					+ " connector must not be null.");
+		}
+		
+		this.saver = saver;
+		this.connector = connector;
 		connectionManager = new ConnectionManager(timeService);
 		objectManager = new PowerObjectManagerStub(timeService, this);
-		
-		logger = LoggerFactory.getLogger(DispatcherImpl.class);
 	}
 
 	@Override
@@ -79,7 +87,7 @@ public class DispatcherImpl implements Dispatcher, RealTimeOperations{
 	}
 	
 	private void savePowerObjectState(State state){
-		powerObjectService.savePowerObjectState(state);
+		saver.savePowerObjectState(state);
 	}
 
 	@Override
@@ -111,7 +119,7 @@ public class DispatcherImpl implements Dispatcher, RealTimeOperations{
 	}
 
 	public void sendCommand(Command command) {
-		outgoingMessageService.sendCommand(command);
+		connector.sendCommand(command);
 		refreshSentMessageTimerForPowerObject(command.getPowerObjectId());
 		
 		logger.info("Sent {} to power object#{}.", command.getClass().getSimpleName(),
@@ -124,13 +132,5 @@ public class DispatcherImpl implements Dispatcher, RealTimeOperations{
 
 	void setObjectManager(PowerObjectManagerStub objectManager) {
 		this.objectManager = objectManager;
-	}
-
-	void setPowerObjectService(PowerObjectService powerObjectService) {
-		this.powerObjectService = powerObjectService;
-	}
-
-	void setOutgoingMessageService(OutgoingMessageService outgoingMessageService) {
-		this.outgoingMessageService = outgoingMessageService;
 	}
 }

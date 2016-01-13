@@ -11,7 +11,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
+import com.epsm.epsmCore.model.generalModel.TimeService;
 
 public class ConnectionManagerTest {
 	private TimeService timeService;
@@ -26,6 +26,11 @@ public class ConnectionManagerTest {
 		
 		idToSendMessage = new HashSet<Long>();
 		manager = new ConnectionManager(timeService);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void exceptionInConstructorIfTimeserviceIsNull(){
+		new ConnectionManager(null);
 	}
 	
 	@Test

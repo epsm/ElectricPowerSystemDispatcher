@@ -2,30 +2,42 @@ package com.epsm.epsdCore.model;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 
-import com.epsm.epsdCore.model.DispatcherImpl;
 import com.epsm.epsdCore.model.control.RealTimeOperationsRunner;
-import com.epsm.electricPowerSystemModel.model.dispatch.Dispatcher;
-import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
+import com.epsm.epsmCore.model.dispatch.Dispatcher;
+import com.epsm.epsmCore.model.generalModel.TimeService;
 
-@Component
 public class DispatcherFactory {
 	private DispatcherImpl dispatcher;
 	private RealTimeOperationsRunner runner;
 	private TimeService timeService;
+	private StateSaver saver;
+	private ObjectsConnector connector;
 	private Logger logger;
 	
-	@Autowired
-	public DispatcherFactory(TimeService timeService){
+	public DispatcherFactory(TimeService timeService, StateSaver saver, ObjectsConnector connector){
+		logger = LoggerFactory.getLogger(DispatcherFactory.class);
+		
+		if(timeService == null){
+			logger.error("Null TimeService in constructor.");
+			String message = "DispatcherFactory constructor: timeService must not be null.";
+			throw new IllegalArgumentException(message);
+		}else if(saver == null){
+			logger.error("Null StateSaver in constructor.");
+			String message = "DispatcherFactory constructor: saver must not be null.";
+			throw new IllegalArgumentException(message);
+		}else if(connector == null){
+			logger.error("Null ObjectsConnector in constructor.");
+			String message = "DispatcherFactory constructor: connector must not be null.";
+			throw new IllegalArgumentException(message);
+		}
+		
+		this.saver = saver;
+		this.connector = connector;
 		this.timeService = timeService;
 		runner = new RealTimeOperationsRunner();
-		logger = LoggerFactory.getLogger(PowerObjectManagerStub.class);
 	}
 	
-	@Bean
 	public Dispatcher createDispatcher(){
 		createNewDispatcher();
 		runDispatcher();
@@ -36,7 +48,7 @@ public class DispatcherFactory {
 	}
 	
 	private void createNewDispatcher(){
-		dispatcher = new DispatcherImpl(timeService);
+		dispatcher = new DispatcherImpl(timeService, saver, connector);
 	}
 	
 	private void runDispatcher(){

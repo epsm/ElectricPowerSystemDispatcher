@@ -2,10 +2,13 @@ package com.epsm.epsdCore.model;
 
 import java.time.LocalTime;
 
-import com.epsm.electricPowerSystemModel.model.bothConsumptionAndGeneration.LoadCurve;
-import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
-import com.epsm.electricPowerSystemModel.model.generation.GeneratorGenerationSchedule;
-import com.epsm.electricPowerSystemModel.model.generation.PowerStationGenerationSchedule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.epsm.epsmCore.model.bothConsumptionAndGeneration.LoadCurve;
+import com.epsm.epsmCore.model.generalModel.TimeService;
+import com.epsm.epsmCore.model.generation.GeneratorGenerationSchedule;
+import com.epsm.epsmCore.model.generation.PowerStationGenerationSchedule;
 
 //It is just stub. More complex model see com.epsm.electricPowerSystemModel.model.*;
 public class PowerStationGenerationScheduleCalculatorStub {
@@ -16,8 +19,17 @@ public class PowerStationGenerationScheduleCalculatorStub {
 			77.86f,  77.86f,  77.53f,  77.20f,  77.20f,  77.20f,
 			77.20f,  77.20f,  77.20f,  77.20f,  77.20f,  77.20f 
 	};
+	private Logger logger;
 
 	public PowerStationGenerationScheduleCalculatorStub(TimeService timeService) {
+		logger = LoggerFactory.getLogger(PowerStationGenerationScheduleCalculatorStub.class);
+		
+		if(timeService == null){
+			logger.error("Null TimeService in constructor.");
+			throw new IllegalArgumentException("PowerStationGenerationScheduleCalculatorStub"
+					+ " constructor: timeService must not be null.");
+		}
+		
 		this.timeService = timeService;
 	}
 

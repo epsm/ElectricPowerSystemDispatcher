@@ -13,17 +13,17 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
-import com.epsm.epsdCore.service.OutgoingMessageService;
-import com.epsm.epsdCore.service.PowerObjectService;
-import com.epsm.electricPowerSystemModel.model.consumption.ConsumerParametersStub;
-import com.epsm.electricPowerSystemModel.model.consumption.ConsumerState;
-import com.epsm.electricPowerSystemModel.model.consumption.ConsumptionPermissionStub;
-import com.epsm.electricPowerSystemModel.model.dispatch.Command;
-import com.epsm.electricPowerSystemModel.model.dispatch.Parameters;
-import com.epsm.electricPowerSystemModel.model.dispatch.State;
-import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
+import com.epsm.epsmCore.model.consumption.ConsumerParametersStub;
+import com.epsm.epsmCore.model.consumption.ConsumerState;
+import com.epsm.epsmCore.model.consumption.ConsumptionPermissionStub;
+import com.epsm.epsmCore.model.dispatch.Command;
+import com.epsm.epsmCore.model.dispatch.Parameters;
+import com.epsm.epsmCore.model.dispatch.State;
+import com.epsm.epsmCore.model.generalModel.TimeService;
 
 public class DispatcherImplTest {
 	private DispatcherImpl dispatcher;
@@ -32,36 +32,61 @@ public class DispatcherImplTest {
 	private Parameters parameters;
 	private State state;
 	private Command command;
-	private PowerObjectService powerObjectService;
-	private OutgoingMessageService outgoingMessageService;
+	private StateSaver saver;
+	private ObjectsConnector connector;
 	private TimeService timeService;
 	private final int OBJECT_ID = 6464;
 	
 	@Before
 	public void setUp(){
 		timeService = mock(TimeService.class);
-		dispatcher = new DispatcherImpl(timeService);
+		saver = mock(StateSaver.class);
+		connector = mock(ObjectsConnector.class);
+		dispatcher = new DispatcherImpl(timeService, saver, connector);
 		connectionManager = spy(new ConnectionManager(timeService));
 		objectManager = spy(new PowerObjectManagerStub(timeService, dispatcher));
 		parameters = new ConsumerParametersStub(OBJECT_ID, LocalDateTime.MIN, LocalTime.MIN);
 		state = new ConsumerState(OBJECT_ID, LocalDateTime.MIN, LocalTime.MIN, 100);
 		command = new ConsumptionPermissionStub(OBJECT_ID, LocalDateTime.MIN, LocalTime.MIN);
-		powerObjectService = mock(PowerObjectService.class);
-		outgoingMessageService = mock(OutgoingMessageService.class);
+		
 		dispatcher.setConnectionManager(connectionManager);
 		dispatcher.setObjectManager(objectManager);
-		dispatcher.setPowerObjectService(powerObjectService);
-		dispatcher.setOutgoingMessageService(outgoingMessageService);
-		
 		when(timeService.getCurrentTime()).thenReturn(LocalDateTime.MIN);
+	}
+	
+	@Rule
+	public ExpectedException expectedEx = ExpectedException.none();
+	
+	@Test
+	public void exceptionInConstructorIfTimeServiceIsNull(){
+		expectedEx.expect(IllegalArgumentException.class);
+	    expectedEx.expectMessage("DispatcherImpl constructor: timeService must not be null.");
+		
+		new DispatcherImpl(null, saver, connector);
+	}
+	
+	@Test
+	public void exceptionInConstructorIfStateSaverIsNull(){
+		expectedEx.expect(IllegalArgumentException.class);
+	    expectedEx.expectMessage("DispatcherImpl constructor: saver must not be null.");
+		
+		new DispatcherImpl(timeService, null, connector);
+	}
+	
+	@Test
+	public void exceptionInConstructorIfObjectsConnectorIsNull(){
+		expectedEx.expect(IllegalArgumentException.class);
+	    expectedEx.expectMessage("DispatcherImpl constructor: connector must not be null.");
+		
+		new DispatcherImpl(timeService, saver, null);
 	}
 	
 	@Test
 	public void doNothingIfInEstablishConnectionMethodParametersIsNUll(){
 		dispatcher.establishConnection(null);
 		
-		verify(outgoingMessageService, never()).sendCommand(any());
-		verify(powerObjectService, never()).savePowerObjectState(any());
+		verify(connector, never()).sendCommand(any());
+		verify(saver, never()).savePowerObjectState(any());
 		verify(objectManager, never()).rememberObjectIfItTypeIsKnown(any());
 	}
 	
@@ -104,8 +129,8 @@ public class DispatcherImplTest {
 	public void doNothingIfAcceptedNUllState(){
 		dispatcher.acceptState(null);
 		
-		verify(outgoingMessageService, never()).sendCommand(any());
-		verify(powerObjectService, never()).savePowerObjectState(any());
+		verify(connector, never()).sendCommand(any());
+		verify(saver, never()).savePowerObjectState(any());
 		verify(objectManager, never()).rememberObjectIfItTypeIsKnown(any());
 	}
 	
@@ -129,7 +154,7 @@ public class DispatcherImplTest {
 		dispatcher.establishConnection(parameters);
 		dispatcher.acceptState(state);
 		
-		verify(powerObjectService).savePowerObjectState(state);
+		verify(saver).savePowerObjectState(state);
 	}
 	
 	@Test
@@ -137,7 +162,7 @@ public class DispatcherImplTest {
 		dispatcher.establishConnection(parameters);
 		dispatcher.doRealTimeDependingOperations();
 		
-		verify(outgoingMessageService).sendCommand(isA(Command.class));
+		verify(connector).sendCommand(isA(Command.class));
 	}
 	
 	@Test

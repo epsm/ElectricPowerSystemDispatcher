@@ -3,7 +3,10 @@ package com.epsm.epsdCore.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.epsm.epsmCore.model.generalModel.TimeService;
 
 public class ConnectionManager {
 	private MultiTimer activeConnectionsTimer;
@@ -11,8 +14,17 @@ public class ConnectionManager {
 	private Set<Long> powerObjectsToSendingMessages;
 	private Set<Long> activePowerObjects;
 	private Set<Long> servedPowerObjects;
+	private Logger logger;
 	
 	public ConnectionManager(TimeService timeService){
+		logger = LoggerFactory.getLogger(ConnectionManager.class);
+		
+		if(timeService == null){
+			logger.error("Null TimeService in constructor.");
+			throw new IllegalArgumentException("ConnectionManager constructor:"
+					+ " timeService must not be null.");
+		}
+		
 		activeConnectionsTimer = new MultiTimer(timeService,
 				Constants.CONNECTION_TIMEOUT_IN_SECONDS);
 		servedConnectionsTimer = new MultiTimer(timeService,

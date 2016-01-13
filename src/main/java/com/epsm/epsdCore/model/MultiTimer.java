@@ -5,14 +5,26 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.epsm.electricPowerSystemModel.model.generalModel.TimeService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.epsm.epsmCore.model.generalModel.TimeService;
 
 public class MultiTimer{
 	private Map<Long, LocalDateTime> timers;
 	private TimeService timeService;
 	private int delayInSeconds;
+	private Logger logger;
 	
 	public MultiTimer(TimeService timeService, int delayInSeconds) {
+		logger = LoggerFactory.getLogger(MultiTimer.class);
+		
+		if(timeService == null){
+			logger.error("Null TimeService in constructor.");
+			throw new IllegalArgumentException("MultiTimer constructor:"
+					+ " timeService must not be null.");
+		}
+		
 		timers = new ConcurrentHashMap<Long, LocalDateTime>();
 		this.timeService = timeService;
 		this.delayInSeconds = delayInSeconds;

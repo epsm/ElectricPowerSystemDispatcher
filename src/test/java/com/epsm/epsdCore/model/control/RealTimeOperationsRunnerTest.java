@@ -11,7 +11,7 @@ public class RealTimeOperationsRunnerTest{
 	public ExpectedException expectedEx = ExpectedException.none();
 	
 	@Test
-	public void exceptionIfSimulationIsNull(){
+	public void exceptionInConstructorIfSimulationIsNull(){
 		expectedEx.expect(IllegalArgumentException.class);
 	    expectedEx.expectMessage("RealTimeOperationsRunner: object must not be null.");
 		
