@@ -3,43 +3,18 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.epsm.electricPowerSystemDispatcher</groupId>
-	<artifactId>epsd</artifactId>
+	<groupId>com.epsm</groupId>
+	<artifactId>epsd-core</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
-	<name>Electric Power System Dispatcher</name>
-	<description>Stub for electric power system dispatcher</description>
+	<packaging>jar</packaging>
+	<name>Electric power system dispatcher</name>
+	<description>Dispatcher for electric power system.</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring.version>4.2.4.RELEASE</spring.version>
-		<hibernate.version>5.0.2.Final</hibernate.version>
 	</properties>
 
 	<dependencies>
-		<!-- Spring -->    	
-    	<dependency>
-        	<groupId>org.springframework</groupId>
-        	<artifactId>spring-webmvc</artifactId>
-       		<version>${spring.version}</version>
-    	</dependency>
-    	<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-			<version>${spring.version}</version>
-		</dependency>	
-		
-		<!-- Hibernate-->
-		<dependency>
-			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.1-api</artifactId>
-			<version>1.0.0.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>${hibernate.version}</version>
-		</dependency>
 		
 		<!-- Logback -->	
 		<dependency>
@@ -67,37 +42,11 @@
 			<version>2.1.1</version>
 		</dependency>
 
-		<!-- MySql connector -->
-		<dependency>  
-        	<groupId>mysql</groupId>  
-       		<artifactId>mysql-connector-java</artifactId>  
-        	<version>5.1.35</version>  
-    	</dependency>
-
-		<!-- servlet -->
-    	<dependency>
-   			<groupId>javax.servlet</groupId>
-   			<artifactId>javax.servlet-api</artifactId>
-    		<version>3.0.1</version>
-		</dependency>
-
-		<!-- EPSM, installed to local repository -->	
+		<!-- epsm-core, installed to local repository -->	
 		<dependency>
-			<groupId>com.epsm.electricPowerSystemModel</groupId>
-			<artifactId>epsm</artifactId>
+			<groupId>com.epsm</groupId>
+			<artifactId>epsm-core</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		
-		<!-- JSON -->
-		<dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.6.4</version>
-        </dependency>
-        <dependency>
-			<groupId>com.fasterxml.jackson.datatype</groupId>
-			<artifactId>jackson-datatype-jsr310</artifactId>
-			<version>2.6.4</version>
 		</dependency>
 		
 		<!-- Tests -->
@@ -113,31 +62,6 @@
 			<version>1.10.19</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.dbunit</groupId>
-			<artifactId>dbunit</artifactId>
-			<version>2.4.8</version>
-			<type>jar</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>1.4.190</version>
-			<!-- scope>test</scope -->
-		</dependency>
-		<dependency>
-			<groupId>com.github.springtestdbunit</groupId>
-			<artifactId>spring-test-dbunit</artifactId>
-			<version>1.2.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>${spring.version}</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -151,13 +75,6 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-			<plugin>
-        		<artifactId>maven-war-plugin</artifactId>
-        		<version>2.4</version>
-        		<configuration>
-          			<failOnMissingWebXml>false</failOnMissingWebXml>
-        		</configuration>
-      		</plugin>
 		</plugins>
 	</build>
 </project>
