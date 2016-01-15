@@ -73,7 +73,7 @@ public class PowerObjectManagerStub{
 		PowerStationGenerationSchedule schedule = calculator.getSchedule(powerStationId);
 		dispatcher.sendCommand(schedule);
 		
-		logger.debug("Request to sending {} to power station#{}.", schedule, powerStationId);
+		logger.debug("Request to sending: {} to power station#{}.", schedule, powerStationId);
 	}
 	
 	private void sendMessageToConsumer(long consumerId) {
@@ -81,6 +81,6 @@ public class PowerObjectManagerStub{
 				consumerId, timeService.getCurrentTime(), LocalTime.MIN);
 		dispatcher.sendCommand(permission);
 		
-		logger.debug("Request to sending {} to consumer#{}.", permission, consumerId);
+		logger.debug("Request to sending: {} to consumer#{}.", permission, consumerId);
 	}
 }

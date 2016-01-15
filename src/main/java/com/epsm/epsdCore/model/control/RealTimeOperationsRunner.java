@@ -22,7 +22,7 @@ public class RealTimeOperationsRunner{
 		this.object = object;
 		runObject();
 		
-		logger.info("{} run.", object);
+		logger.info("{} run.", object.getClass().getSimpleName());
 	}
 	
 	private void runObject(){
@@ -33,6 +33,7 @@ public class RealTimeOperationsRunner{
 	}
 	
 	private class RealTimeRunner implements Runnable{
+		private int stepCounter;
 		
 		@Override
 		public void run() {
@@ -41,10 +42,17 @@ public class RealTimeOperationsRunner{
 			while(true){
 				object.doRealTimeDependingOperations();
 				
-				logger.debug("Step performed.");
+				if(stepCounter++ > 10){
+					logger.debug("Step performed.");
+					resetCounter();
+				}
 				
 				pause();
 			}
+		}
+		
+		private void resetCounter(){
+			stepCounter = 1;
 		}
 		
 		private void pause(){

@@ -51,7 +51,7 @@ public class DispatcherImpl implements Dispatcher, RealTimeOperations{
 		}else if(tryToRecognizeAndRememberObject(parameters)){
 			refreshConnectionTimeout(parameters);
 			
-			logger.info("Received {} from power object#{}.",
+			logger.info("Received: {} from power object#{}.",
 					parameters.getClass().getSimpleName(), parameters.getPowerObjectId());
 		}else{
 			logger.warn("Recived unknown parameters: {}.", parameters);
@@ -74,7 +74,7 @@ public class DispatcherImpl implements Dispatcher, RealTimeOperations{
 			refreshConnectionTimeout(state);
 			savePowerObjectState(state);
 			
-			logger.info("Received {} from power object#{}.",
+			logger.info("Received: {} from power object#{}.",
 					state.getClass().getSimpleName(), state.getPowerObjectId());
 		}else{
 			logger.info("Recived state from innactive object#{}.", state.getPowerObjectId());
@@ -122,7 +122,7 @@ public class DispatcherImpl implements Dispatcher, RealTimeOperations{
 		connector.sendCommand(command);
 		refreshSentMessageTimerForPowerObject(command.getPowerObjectId());
 		
-		logger.info("Sent {} to power object#{}.", command.getClass().getSimpleName(),
+		logger.info("Sent: {} to power object#{}.", command.getClass().getSimpleName(),
 				command.getPowerObjectId());
 	}
 
