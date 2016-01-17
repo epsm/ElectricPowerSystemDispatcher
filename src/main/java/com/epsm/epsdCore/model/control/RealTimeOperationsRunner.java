@@ -43,7 +43,7 @@ public class RealTimeOperationsRunner{
 				object.doRealTimeDependingOperations();
 				
 				if(stepCounter++ > 10){
-					logger.debug("Step performed.");
+					logger.debug("10 step performed.");
 					resetCounter();
 				}
 				
