@@ -2,7 +2,6 @@ package com.epsm.epsdCore.model;
 
 import static org.mockito.Mockito.mock;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,14 +13,12 @@ public class DispatcherFactoryTest {
 	private StateSaver saver;
 	private ObjectsConnector connector;
 	private TimeService timeService;
-	private DispatcherFactory factory;
 	
 	@Before
 	public void setUp(){
 		timeService = mock(TimeService.class);
 		saver = mock(StateSaver.class);
 		connector = mock(ObjectsConnector.class);
-		factory = new DispatcherFactory(timeService, saver, connector);
 	}
 	
 	@Rule

@@ -8,8 +8,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,17 +38,19 @@ public class PowerObjectManagerStubTest {
 	public void setUp(){
 		timeService = new TimeService();
 		dispatcher = mock(DispatcherImpl.class);
-		manager = spy(new PowerObjectManagerStub(timeService, dispatcher));
+		manager = spy(new PowerObjectManagerStub(timeService));
 		powerStationParameters = new PowerStationParameters(POWER_OBJECT_ID, LocalDateTime.MIN,
-				LocalTime.MIN, 2);
+				LocalDateTime.MIN, 2);
 		consumerParameters = new ConsumerParametersStub(POWER_OBJECT_ID, LocalDateTime.MIN,
-				LocalTime.MIN);
+				LocalDateTime.MIN);
 		unknownParameters = new UnknownParameters(POWER_OBJECT_ID, LocalDateTime.MIN,
-				LocalTime.MIN);
+				LocalDateTime.MIN);
 	}
 	
 	private class UnknownParameters extends Parameters{
-		public UnknownParameters(long powerObjectId, LocalDateTime realTimeStamp, LocalTime simulationTimeStamp) {
+		public UnknownParameters(long powerObjectId, LocalDateTime realTimeStamp,
+				LocalDateTime simulationTimeStamp) {
+			
 			super(powerObjectId, realTimeStamp, simulationTimeStamp);
 		}
 
@@ -63,28 +65,32 @@ public class PowerObjectManagerStubTest {
 		expectedEx.expect(IllegalArgumentException.class);
 	    expectedEx.expectMessage("PowerObjectManagerStub constructor: timeService can't be null.");
 	
-	    new PowerObjectManagerStub(null, dispatcher);
+	    new PowerObjectManagerStub(null);
 	}
 	
-	@Test
-	public void exceptionInConstructorIfDispatcherIsNull(){
-		expectedEx.expect(IllegalArgumentException.class);
-	    expectedEx.expectMessage("PowerObjectManagerStub constructor: dispatcher can't be null.");
-	
-	    new PowerObjectManagerStub(timeService, null);
-	}
 	
 	@Test
-	public void managerSendsPowerStationGenerationScheduleToKnownPowerStations(){
-		manager.rememberObjectIfItTypeIsKnown(powerStationParameters);
-		manager.sendMessage(POWER_OBJECT_ID);
+	public void registersPowerStation(){
+		boolean powerStationRegistered 
+				= manager.registerObjectIfItTypeIsKnown(powerStationParameters);
 		
-		verify(dispatcher).sendCommand(isA(PowerStationGenerationSchedule.class));
+		Assert.assertTrue(powerStationRegistered);
 	}
+	
+	@Test
+	public void registersConsumer(){
+		boolean consumerRegistered 
+				= manager.registerObjectIfItTypeIsKnown(consumerParameters);
+		
+		Assert.assertTrue(consumerRegistered);
+	}
+	
+	
+	
 	
 	@Test
 	public void managerSendsConsumptionPermissionToKnownConsumers(){
-		manager.rememberObjectIfItTypeIsKnown(consumerParameters);
+		manager.registerObjectIfItTypeIsKnown(consumerParameters);
 		manager.sendMessage(POWER_OBJECT_ID);
 		
 		verify(dispatcher).sendCommand(isA(ConsumptionPermissionStub.class));
@@ -92,7 +98,7 @@ public class PowerObjectManagerStubTest {
 	
 	@Test
 	public void managerSendsNothingToUnknownPowerObject(){
-		manager.rememberObjectIfItTypeIsKnown(unknownParameters);
+		manager.registerObjectIfItTypeIsKnown(unknownParameters);
 		manager.sendMessage(POWER_OBJECT_ID);
 		
 		verify(dispatcher, never()).sendCommand(any());

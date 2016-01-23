@@ -10,9 +10,9 @@ import com.epsm.epsmCore.model.generalModel.TimeService;
 public class DispatcherFactory {
 	private DispatcherImpl dispatcher;
 	private RealTimeOperationsRunner runner;
-	private TimeService timeService;
 	private StateSaver saver;
 	private ObjectsConnector connector;
+	private PowerObjectManagerStub manager;
 	private Logger logger;
 	
 	public DispatcherFactory(TimeService timeService, StateSaver saver, ObjectsConnector connector){
@@ -34,8 +34,8 @@ public class DispatcherFactory {
 		
 		this.saver = saver;
 		this.connector = connector;
-		this.timeService = timeService;
 		runner = new RealTimeOperationsRunner();
+		manager = new PowerObjectManagerStub(timeService);
 	}
 	
 	public Dispatcher createDispatcher(){
@@ -48,7 +48,7 @@ public class DispatcherFactory {
 	}
 	
 	private void createNewDispatcher(){
-		dispatcher = new DispatcherImpl(timeService, saver, connector);
+		dispatcher = new DispatcherImpl(manager, saver, connector);
 	}
 	
 	private void runDispatcher(){

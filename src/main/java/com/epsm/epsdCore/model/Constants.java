@@ -1,6 +1,7 @@
 package com.epsm.epsdCore.model;
 
+import java.time.LocalTime;
+
 public class Constants {
-	public final static int CONNECTION_TIMEOUT_IN_SECONDS = 10;
-	public final static int PAUSE_BETWEEN_SENDING_MESSAGES_IN_SECONDS = 2;
+	public static final LocalTime HOUR_TO_SEND_MESSAGE = LocalTime.of(18,00);
 }

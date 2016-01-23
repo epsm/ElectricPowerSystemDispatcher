@@ -1,6 +1,7 @@
 package com.epsm.epsdCore.model;
 
-import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -8,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.epsm.epsmCore.model.consumption.ConsumerParametersStub;
-import com.epsm.epsmCore.model.consumption.ConsumptionPermissionStub;
 import com.epsm.epsmCore.model.dispatch.Parameters;
 import com.epsm.epsmCore.model.generalModel.TimeService;
 import com.epsm.epsmCore.model.generation.PowerStationGenerationSchedule;
@@ -16,71 +16,71 @@ import com.epsm.epsmCore.model.generation.PowerStationParameters;
 
 //It just a stub. More complex model see com.epsm.electricPowerSystemModel.model.*;
 public class PowerObjectManagerStub{
-	private Map<Long, Parameters> storedParameters;
+	private Map<Long, Parameters> regesteredObjectsParameters;
 	private PowerStationGenerationScheduleCalculatorStub calculator;
-	private DispatcherImpl dispatcher;
-	private TimeService timeService;
 	private Logger logger;
 	
-	public PowerObjectManagerStub(TimeService timeService, DispatcherImpl dispatcher) {
+	public PowerObjectManagerStub(TimeService timeService) {
 		logger = LoggerFactory.getLogger(PowerObjectManagerStub.class);
 		
 		if(timeService == null){
 			String message = "PowerObjectManagerStub constructor: timeService can't be null.";
 			logger.debug("Constructor: timeService can't be null.");
 			throw new IllegalArgumentException(message);
-		}else if(dispatcher == null){
-			String message = "PowerObjectManagerStub constructor: dispatcher can't be null.";
-			logger.debug("Constructor: dispatcher can't be null.");
-			throw new IllegalArgumentException(message);
 		}
 		
-		this.timeService = timeService;
-		this.dispatcher = dispatcher;
-		storedParameters = new ConcurrentHashMap<Long, Parameters>();
+		regesteredObjectsParameters = new ConcurrentHashMap<Long, Parameters>();
 		calculator = new PowerStationGenerationScheduleCalculatorStub(timeService);
 	}
 	
-	public boolean rememberObjectIfItTypeIsKnown(Parameters parameters){
-		long powerObjectId = parameters.getPowerObjectId();
-		
+	public boolean registerObjectIfItTypeIsKnown(Parameters parameters){
 		if(parameters instanceof PowerStationParameters){
-			storedParameters.putIfAbsent(powerObjectId, parameters);
-			logger.debug("{} saved.", parameters);
+			registerPowerObject(parameters);
 			return true;
 		}else if(parameters instanceof ConsumerParametersStub){
-			storedParameters.putIfAbsent(powerObjectId, parameters);
-			logger.debug("{} saved.", parameters);
+			registerPowerObject(parameters);
 			return true;
 		}
-
+		
+		logger.warn("Got: wrong parameters type {}.", parameters);
 		return false;
 	}
 	
-	public void sendMessage(long powerObjectId){
-		Parameters parameters = storedParameters.get(powerObjectId);
-		
-		if(parameters == null){
-			logger.warn("Requested sending message to null powerObject#{}.", powerObjectId);
-		}else if(parameters instanceof PowerStationParameters){
-			sendMessageToPowerStation(powerObjectId);
-		}else{
-			sendMessageToConsumer(powerObjectId);
-		}
-	}
-
-	private void sendMessageToPowerStation(long powerStationId){
-		PowerStationGenerationSchedule schedule = calculator.getSchedule(powerStationId);
-		dispatcher.sendCommand(schedule);
-		
-		logger.debug("Request to sending: {} to power station#{}.", schedule, powerStationId);
+	private void registerPowerObject(Parameters parameters){
+		long powerObjectId = parameters.getPowerObjectId();
+		regesteredObjectsParameters.putIfAbsent(powerObjectId, parameters);
+		logger.debug("Registered power object with parameters {}.", parameters);
 	}
 	
-	private void sendMessageToConsumer(long consumerId) {
-		ConsumptionPermissionStub permission = new ConsumptionPermissionStub(
-				consumerId, timeService.getCurrentTime(), LocalTime.MIN);
-		dispatcher.sendCommand(permission);
+	public List<PowerStationGenerationSchedule> getPowerStationGenerationSchedules(){
+		List<Long> ids = filterPowerStationIds();
 		
-		logger.debug("Request to sending: {} to consumer#{}.", permission, consumerId);
+		return getSchedulesForPowerStations(ids);
+	}
+	
+	private List<Long> filterPowerStationIds(){
+		ArrayList<Long> ids = new ArrayList<Long>(); 
+		
+		for(Parameters parameters: regesteredObjectsParameters.values()){
+			if(parameters instanceof PowerStationParameters){
+				ids.add(parameters.getPowerObjectId());
+			}
+		}
+		
+		return ids;
+	}
+	
+	private List<PowerStationGenerationSchedule> getSchedulesForPowerStations(List<Long> powerStationIds){
+		List<PowerStationGenerationSchedule> schedules = new ArrayList<PowerStationGenerationSchedule>();
+		
+		for(long powerStationId: powerStationIds){
+			schedules.add(calculator.getSchedule(powerStationId));
+		}
+		
+		return schedules;
+	}
+	
+	public boolean isObjectRegistered(long powerObjectId){
+		return regesteredObjectsParameters.containsKey(powerObjectId);
 	}
 }

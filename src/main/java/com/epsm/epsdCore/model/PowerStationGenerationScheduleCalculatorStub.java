@@ -1,6 +1,6 @@
 package com.epsm.epsdCore.model;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public class PowerStationGenerationScheduleCalculatorStub {
 		GeneratorGenerationSchedule genrationSchedule_2;
 		
 		generationSchedule = new PowerStationGenerationSchedule(powerStationId,
-				timeService.getCurrentTime(), LocalTime.MIN, 2);
+				timeService.getCurrentDateTime(), LocalDateTime.MIN, 2);
 		generationCurve = new LoadCurve(GENERATION_BY_HOURS);
 		genrationSchedule_1 = new GeneratorGenerationSchedule(1, true, true, null);
 		genrationSchedule_2 = new GeneratorGenerationSchedule(2, true, false, generationCurve);

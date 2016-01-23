@@ -1,89 +1,88 @@
 package com.epsm.epsdCore.model;
 
-import java.util.Set;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.epsm.epsmCore.model.bothConsumptionAndGeneration.Message;
-import com.epsm.epsmCore.model.dispatch.Command;
 import com.epsm.epsmCore.model.dispatch.Dispatcher;
 import com.epsm.epsmCore.model.dispatch.Parameters;
 import com.epsm.epsmCore.model.dispatch.State;
 import com.epsm.epsmCore.model.generalModel.RealTimeOperations;
-import com.epsm.epsmCore.model.generalModel.TimeService;
+import com.epsm.epsmCore.model.generation.PowerStationGenerationSchedule;
 
 public class DispatcherImpl implements Dispatcher, RealTimeOperations{
-	private ConnectionManager connectionManager;
 	private PowerObjectManagerStub objectManager;
-	private Set<Long> powerObjectsToSendingMessages;
 	private StateSaver saver;
 	private ObjectsConnector connector;
+	private List<PowerStationGenerationSchedule> schedules;
+	private LocalDateTime dateTimeInSimulation;
+	private LocalDate sentDate;
 	private Logger logger;
 
-	public DispatcherImpl(TimeService timeService, StateSaver saver, ObjectsConnector connector){
+	public DispatcherImpl(PowerObjectManagerStub objectManager, StateSaver saver, 
+			ObjectsConnector connector){
+		
 		logger = LoggerFactory.getLogger(DispatcherImpl.class);
 		
-		if(timeService == null){
-			logger.error("Null TimeService in constructor.");
-			throw new IllegalArgumentException("DispatcherImpl constructor:"
-					+ " timeService must not be null.");
+		if(objectManager == null){
+			String message = "DispatcherImpl constructor: objectManager can't be null.";
+			logger.error(message);
+			throw new IllegalArgumentException(message);
 		}else if(saver == null){
-			logger.error("Null StateSaver in constructor.");
-			throw new IllegalArgumentException("DispatcherImpl constructor:"
-					+ " saver must not be null.");
+			String message = "DispatcherImpl constructor: saver can't be null.";
+			logger.error(message);
+			throw new IllegalArgumentException(message);
 		}else if(connector == null){
-			logger.error("Null ObjectsConnector in constructor.");
-			throw new IllegalArgumentException("DispatcherImpl constructor:"
-					+ " connector must not be null.");
+			String message = "DispatcherImpl constructor: connector can't be null.";
+			logger.error(message);
+			throw new IllegalArgumentException(message);
 		}
 		
+		this.objectManager = objectManager;
 		this.saver = saver;
 		this.connector = connector;
-		connectionManager = new ConnectionManager(timeService);
-		objectManager = new PowerObjectManagerStub(timeService, this);
+		sentDate = LocalDate.MIN;
 	}
 
 	@Override
-	public void establishConnection(Parameters parameters){
+	public boolean registerObject(Parameters parameters){
 		if(parameters == null){
 			logger.warn("Received null parameters.");
-		}else if(tryToRecognizeAndRememberObject(parameters)){
-			refreshConnectionTimeout(parameters);
-			
+		}else if(tryToRecognizeAndRegisterObject(parameters)){
 			logger.info("Received: {} from power object#{}.",
 					parameters.getClass().getSimpleName(), parameters.getPowerObjectId());
+			return true;
 		}else{
 			logger.warn("Recived unknown parameters: {}.", parameters);
 		}
+		
+		return false;
 	}
 	
-	private boolean tryToRecognizeAndRememberObject(Parameters parameters){
-		return objectManager.rememberObjectIfItTypeIsKnown(parameters);
-	}
-	
-	private void refreshConnectionTimeout(Message parameters){
-		connectionManager.refreshTimeout(parameters.getPowerObjectId());
+	private boolean tryToRecognizeAndRegisterObject(Parameters parameters){
+		return objectManager.registerObjectIfItTypeIsKnown(parameters);
 	}
 
 	@Override
 	public void acceptState(State state){
 		if(state == null){
 			logger.warn("Received null state.");
-		}else if(isConnectiosActive(state)){
-			refreshConnectionTimeout(state);
+		}else if(isObjectRegistered(state)){
 			savePowerObjectState(state);
-			
 			logger.info("Received: {} from power object#{}.",
 					state.getClass().getSimpleName(), state.getPowerObjectId());
 		}else{
-			logger.info("Recived state from innactive object#{}.", state.getPowerObjectId());
+			logger.info("Recived state from unregisterd object#{}.", state.getPowerObjectId());
 		}
 	}
 	
-	private boolean isConnectiosActive(State state){
-		long objectId = state.getPowerObjectId();
-		return connectionManager.isConnectionActive(objectId);
+	private boolean isObjectRegistered(State state){
+		long powerObjectId = state.getPowerObjectId();
+		return objectManager.isObjectRegistered(powerObjectId);
 	}
 	
 	private void savePowerObjectState(State state){
@@ -92,45 +91,48 @@ public class DispatcherImpl implements Dispatcher, RealTimeOperations{
 
 	@Override
 	public void doRealTimeDependingOperations() {
-		sendCommandsToObjects();
-	}
-	
-	private void sendCommandsToObjects(){
-		getNecessaryObjectsId();
-		sendMessageForAllAproropriateObjects();
-	}
-	
-	private void getNecessaryObjectsId(){
-		powerObjectsToSendingMessages = connectionManager.getConnectionsForSendingCommand();
-	}
-	
-	private void sendMessageForAllAproropriateObjects(){
-		for(Long powerObjectId: powerObjectsToSendingMessages){
-			sendMessageForPowerObject(powerObjectId);
+		getDateTimeInSimulation();
+		
+		if(isItTimeToSendStationGenerationSchedules()){
+			sendSchedulesForPowerStations();
+			refreshSentSchedulesDate();
 		}
 	}
-
-	private void sendMessageForPowerObject(long powerObjectId){
-		objectManager.sendMessage(powerObjectId);
+	
+	private void getDateTimeInSimulation(){
+		dateTimeInSimulation = connector.getDateTimeInSimulation();
 	}
 	
-	private void refreshSentMessageTimerForPowerObject(long powerObjectId){
-		connectionManager.refreshLastSentCommandTime(powerObjectId);
+	private boolean isItTimeToSendStationGenerationSchedules(){
+		return isDateAppropriate() && isTimeAppropriate();
 	}
-
-	public void sendCommand(Command command) {
-		connector.sendCommand(command);
-		refreshSentMessageTimerForPowerObject(command.getPowerObjectId());
-		
-		logger.info("Sent: {} to power object#{}.", command.getClass().getSimpleName(),
-				command.getPowerObjectId());
+	
+	private boolean isDateAppropriate(){
+		LocalDate dateInSimulation = dateTimeInSimulation.toLocalDate();
+		return sentDate.isBefore(dateInSimulation);
 	}
-
-	void setConnectionManager(ConnectionManager connectionManager) {
-		this.connectionManager = connectionManager;
+	
+	private boolean isTimeAppropriate(){
+		LocalTime timeInSimulation = dateTimeInSimulation.toLocalTime();
+		return timeInSimulation.isAfter(Constants.HOUR_TO_SEND_MESSAGE);
 	}
-
-	void setObjectManager(PowerObjectManagerStub objectManager) {
-		this.objectManager = objectManager;
+	
+	private void sendSchedulesForPowerStations(){
+		getSchedules();
+		sendSchedules();	
+	}
+	
+	private void getSchedules(){
+		schedules = objectManager.getPowerStationGenerationSchedules();
+	}
+	
+	private void sendSchedules(){
+		for(PowerStationGenerationSchedule generationSchedule: schedules){
+			connector.sendCommand(generationSchedule);
+		}
+	}
+	
+	private void refreshSentSchedulesDate(){
+		sentDate = dateTimeInSimulation.toLocalDate();
 	}
 }

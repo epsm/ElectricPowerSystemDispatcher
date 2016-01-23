@@ -1,57 +1,52 @@
 package com.epsm.epsdCore.model;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.epsm.epsmCore.model.consumption.ConsumerParametersStub;
 import com.epsm.epsmCore.model.consumption.ConsumerState;
-import com.epsm.epsmCore.model.consumption.ConsumptionPermissionStub;
-import com.epsm.epsmCore.model.dispatch.Command;
 import com.epsm.epsmCore.model.dispatch.Parameters;
 import com.epsm.epsmCore.model.dispatch.State;
-import com.epsm.epsmCore.model.generalModel.TimeService;
+import com.epsm.epsmCore.model.generation.PowerStationGenerationSchedule;
+import com.epsm.epsmCore.model.generation.PowerStationParameters;
 
 public class DispatcherImplTest {
-	private DispatcherImpl dispatcher;
-	private ConnectionManager connectionManager;
 	private PowerObjectManagerStub objectManager;
-	private Parameters parameters;
-	private State state;
-	private Command command;
 	private StateSaver saver;
 	private ObjectsConnector connector;
-	private TimeService timeService;
-	private final int OBJECT_ID = 6464;
+	private DispatcherImpl dispatcher;
+	private Parameters parameters;
+	private State state;
+	private PowerStationGenerationSchedule generationSchedule;
+	private final long OBJECT_ID = 6464;
 	
 	@Before
 	public void setUp(){
-		timeService = mock(TimeService.class);
+		objectManager = mock(PowerObjectManagerStub.class);
 		saver = mock(StateSaver.class);
 		connector = mock(ObjectsConnector.class);
-		dispatcher = new DispatcherImpl(timeService, saver, connector);
-		connectionManager = spy(new ConnectionManager(timeService));
-		objectManager = spy(new PowerObjectManagerStub(timeService, dispatcher));
-		parameters = new ConsumerParametersStub(OBJECT_ID, LocalDateTime.MIN, LocalTime.MIN);
-		state = new ConsumerState(OBJECT_ID, LocalDateTime.MIN, LocalTime.MIN, 100);
-		command = new ConsumptionPermissionStub(OBJECT_ID, LocalDateTime.MIN, LocalTime.MIN);
+		dispatcher = new DispatcherImpl(objectManager, saver, connector);
+		parameters = mock(PowerStationParameters.class);
+		state = new ConsumerState(OBJECT_ID, LocalDateTime.MIN, LocalDateTime.MIN, 100);
+		generationSchedule = mock(PowerStationGenerationSchedule.class);
+		ArrayList<PowerStationGenerationSchedule> schedules = new ArrayList<PowerStationGenerationSchedule>();
 		
-		dispatcher.setConnectionManager(connectionManager);
-		dispatcher.setObjectManager(objectManager);
-		when(timeService.getCurrentTime()).thenReturn(LocalDateTime.MIN);
+		schedules.add(generationSchedule);
+		when(parameters.getPowerObjectId()).thenReturn(OBJECT_ID);
+		when(objectManager.getPowerStationGenerationSchedules()).thenReturn(schedules);
 	}
 	
 	@Rule
@@ -60,7 +55,7 @@ public class DispatcherImplTest {
 	@Test
 	public void exceptionInConstructorIfTimeServiceIsNull(){
 		expectedEx.expect(IllegalArgumentException.class);
-	    expectedEx.expectMessage("DispatcherImpl constructor: timeService must not be null.");
+	    expectedEx.expectMessage("DispatcherImpl constructor: objectManager can't be null.");
 		
 		new DispatcherImpl(null, saver, connector);
 	}
@@ -68,61 +63,47 @@ public class DispatcherImplTest {
 	@Test
 	public void exceptionInConstructorIfStateSaverIsNull(){
 		expectedEx.expect(IllegalArgumentException.class);
-	    expectedEx.expectMessage("DispatcherImpl constructor: saver must not be null.");
+	    expectedEx.expectMessage("DispatcherImpl constructor: saver can't be null.");
 		
-		new DispatcherImpl(timeService, null, connector);
+		new DispatcherImpl(objectManager, null, connector);
 	}
 	
 	@Test
 	public void exceptionInConstructorIfObjectsConnectorIsNull(){
 		expectedEx.expect(IllegalArgumentException.class);
-	    expectedEx.expectMessage("DispatcherImpl constructor: connector must not be null.");
+	    expectedEx.expectMessage("DispatcherImpl constructor: connector can't be null.");
 		
-		new DispatcherImpl(timeService, saver, null);
+		new DispatcherImpl(objectManager, saver, null);
 	}
 	
 	@Test
-	public void doNothingIfInEstablishConnectionMethodParametersIsNUll(){
-		dispatcher.establishConnection(null);
+	public void doNothingIfRegisterObjectMethodParametersIsNUll(){
+		dispatcher.registerObject(null);
 		
 		verify(connector, never()).sendCommand(any());
 		verify(saver, never()).savePowerObjectState(any());
-		verify(objectManager, never()).rememberObjectIfItTypeIsKnown(any());
+		verify(objectManager, never()).registerObjectIfItTypeIsKnown(any());
 	}
 	
 	@Test
-	public void passesNotNullParametersToPowerObjectManager(){
-		dispatcher.establishConnection(parameters);
+	public void passesNotNullObjectParametersToPowerObjectManager(){
+		dispatcher.registerObject(parameters);
 		
-		verify(objectManager).rememberObjectIfItTypeIsKnown(parameters);
+		verify(objectManager).registerObjectIfItTypeIsKnown(parameters);
 	}
 	
 	@Test
-	public void refreshesConnectionTimeoutIfParameteesRecognized(){
-		dispatcher.establishConnection(parameters);
+	public void returnsTrueIfObjectManagerRegisteredObject(){
+		when(objectManager.registerObjectIfItTypeIsKnown(parameters)).thenReturn(true);
 		
-		verify(connectionManager).refreshTimeout(OBJECT_ID);
+		Assert.assertTrue(dispatcher.registerObject(parameters));
 	}
 	
 	@Test
-	public void doesNotrefreshConnectionTimeoutIfParameteesNotRecognized(){
-		parameters = new UnknownParameters(OBJECT_ID, LocalDateTime.MIN, LocalTime.MIN);
-		dispatcher.establishConnection(parameters);
+	public void returnsFalseIfObjectManagerDidnotRegisterObject(){
+		when(objectManager.registerObjectIfItTypeIsKnown(parameters)).thenReturn(false);
 		
-		verify(connectionManager, never()).refreshTimeout(OBJECT_ID);
-	}
-	
-	private class UnknownParameters extends Parameters{
-		public UnknownParameters(long powerObjectId, LocalDateTime realTimeStamp,
-				LocalTime simulationTimeStamp) {
-			
-			super(powerObjectId, realTimeStamp, simulationTimeStamp);
-		}
-
-		@Override
-		public String toString() {
-			return null;
-		}
+		Assert.assertFalse(dispatcher.registerObject(parameters));
 	}
 	
 	@Test
@@ -131,44 +112,102 @@ public class DispatcherImplTest {
 		
 		verify(connector, never()).sendCommand(any());
 		verify(saver, never()).savePowerObjectState(any());
-		verify(objectManager, never()).rememberObjectIfItTypeIsKnown(any());
+		verify(objectManager, never()).registerObjectIfItTypeIsKnown(any());
 	}
 	
 	@Test
-	public void refreshesConnectionTimeoutAfterRecievingStateIfConnectionISActive(){
-		dispatcher.establishConnection(parameters);
-		dispatcher.acceptState(state);
+	public void doNothingIfAcceptedUnknownState(){
+		dispatcher.acceptState(mock(State.class));
 		
-		verify(connectionManager, times(2)).refreshTimeout(OBJECT_ID);
+		verify(connector, never()).sendCommand(any());
+		verify(saver, never()).savePowerObjectState(any());
+		verify(objectManager, never()).registerObjectIfItTypeIsKnown(any());
 	}
 	
 	@Test
-	public void doesNotRefreshesConnectionTimeoutAfterRecievingStateIfConnectionISNotActive(){
-		dispatcher.acceptState(state);
+	public void savesStateIfObjectRegistered(){
+		when(objectManager.isObjectRegistered(OBJECT_ID)).thenReturn(true);
 		
-		verify(connectionManager, never()).refreshTimeout(OBJECT_ID);
-	}
-	
-	@Test
-	public void savesStateAfterRecievingStateIfConnectionISActive(){
-		dispatcher.establishConnection(parameters);
 		dispatcher.acceptState(state);
 		
 		verify(saver).savePowerObjectState(state);
 	}
 	
 	@Test
-	public void sendsCommandsForActiveConnections(){
-		dispatcher.establishConnection(parameters);
-		dispatcher.doRealTimeDependingOperations();
+	public void doNothingIfAcceptedStateFromUnregisterObject(){
+		when(objectManager.isObjectRegistered(OBJECT_ID)).thenReturn(false);
 		
-		verify(connector).sendCommand(isA(Command.class));
+		dispatcher.acceptState(state);
+		
+		verify(saver, never()).savePowerObjectState(state);
 	}
 	
 	@Test
-	public void refreshesServedTimeAfterSendingCommand(){
-		dispatcher.sendCommand(command);
+	public void retrievesSimulationTimeFromObjectsConnectorIfDoRealTimeOperationsInvoked(){
+		when(connector.getDateTimeInSimulation()).thenReturn(LocalDateTime.MIN);
 		
-		verify(connectionManager).refreshLastSentCommandTime(OBJECT_ID);
+		dispatcher.doRealTimeDependingOperations();
+		
+		verify(connector).getDateTimeInSimulation();
+	}
+	
+	@Test
+	public void retrievesGenerationSchedulesFromObjectManagerIfItIsTime(){
+		makeTimeToSendSchedule();
+		
+		dispatcher.doRealTimeDependingOperations();
+		
+		verify(objectManager).getPowerStationGenerationSchedules();
+	}
+	
+	private void makeTimeToSendSchedule(){
+		when(connector.getDateTimeInSimulation()).thenReturn(LocalDateTime.MAX);
+	}
+	
+	@Test
+	public void doNotRetrieveGenerationSchedulesFromObjectManagerIfItIsNotTimeTime(){
+		makeTimeNotToSendSchedule();
+		
+		dispatcher.doRealTimeDependingOperations();
+		
+		verify(objectManager, never()).getPowerStationGenerationSchedules();
+	}
+	
+	private void makeTimeNotToSendSchedule(){
+		when(connector.getDateTimeInSimulation()).thenReturn(LocalDateTime.MIN);
+	}
+	
+	@Test
+	public void sendsGenerationSchedulesIfItIsTime(){
+		makeTimeToSendSchedule();
+		
+		dispatcher.doRealTimeDependingOperations();
+		
+		verify(connector).sendCommand(generationSchedule);
+	}
+	
+	@Test
+	public void doNotSendSchedulesIfItIsNotTimeTime(){
+		makeTimeNotToSendSchedule();
+		
+		dispatcher.doRealTimeDependingOperations();
+		
+		verify(connector, never()).sendCommand(generationSchedule);
+	}
+	
+	@Test
+	public void doNotSendSchedulesIfDateAppropriateButTimeNot(){
+		makeAppropriateDateButUnappropriateTime();
+		
+		dispatcher.doRealTimeDependingOperations();
+		
+		verify(connector, never()).sendCommand(generationSchedule);
+	}
+	
+	private void makeAppropriateDateButUnappropriateTime(){
+		LocalDate date = LocalDate.MAX;
+		LocalTime time = Constants.HOUR_TO_SEND_MESSAGE.minusNanos(1);
+		
+		when(connector.getDateTimeInSimulation()).thenReturn(LocalDateTime.of(date, time));
 	}
 }
