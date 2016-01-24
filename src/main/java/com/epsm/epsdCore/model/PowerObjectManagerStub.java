@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.epsm.epsmCore.model.consumption.ConsumerParametersStub;
 import com.epsm.epsmCore.model.dispatch.Parameters;
 import com.epsm.epsmCore.model.generalModel.TimeService;
 import com.epsm.epsmCore.model.generation.PowerStationGenerationSchedule;
@@ -34,16 +33,35 @@ public class PowerObjectManagerStub{
 	}
 	
 	public boolean registerObjectIfItTypeIsKnown(Parameters parameters){
-		if(parameters instanceof PowerStationParameters){
+		if(isPowerObjectSupported(parameters) && isPowerObjectIdUniqe(parameters)){
 			registerPowerObject(parameters);
+			logger.info("Registered: power object with parameters {}.", parameters);
 			return true;
-		}else if(parameters instanceof ConsumerParametersStub){
-			registerPowerObject(parameters);
-			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	private boolean isPowerObjectSupported(Parameters parameters){
+		boolean supported = Constants.SUPPORTED_POWER_OBJECT_PARAMETERS.contains(
+				parameters.getClass());
+		
+		if(!supported){
+			logger.warn("PowerObject type with parameters {} is not supported.", parameters);
 		}
 		
-		logger.warn("Got: wrong parameters type {}.", parameters);
-		return false;
+		return supported; 
+	}
+	
+	private boolean isPowerObjectIdUniqe(Parameters parameters){
+		long powerObjectId = parameters.getPowerObjectId();
+		boolean unique = !regesteredObjectsParameters.containsKey(powerObjectId);
+		
+		if(!unique){
+			logger.warn("PowerObject id#{} is not unique.", powerObjectId);
+		}
+		
+		return unique; 
 	}
 	
 	private void registerPowerObject(Parameters parameters){
@@ -54,7 +72,6 @@ public class PowerObjectManagerStub{
 	
 	public List<PowerStationGenerationSchedule> getPowerStationGenerationSchedules(){
 		List<Long> ids = filterPowerStationIds();
-		
 		return getSchedulesForPowerStations(ids);
 	}
 	
