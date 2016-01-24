@@ -18,13 +18,14 @@ public class DispatcherImpl implements Dispatcher, RealTimeOperations{
 	private PowerObjectManagerStub objectManager;
 	private StateSaver saver;
 	private ObjectsConnector connector;
+	private PowerObjectsDateTimeSource dateTimeSource;
 	private List<PowerStationGenerationSchedule> schedules;
 	private LocalDateTime dateTimeInSimulation;
 	private LocalDate sentDate;
 	private Logger logger;
 
 	public DispatcherImpl(PowerObjectManagerStub objectManager, StateSaver saver, 
-			ObjectsConnector connector){
+			ObjectsConnector connector, PowerObjectsDateTimeSource dateTimeSource){
 		
 		logger = LoggerFactory.getLogger(DispatcherImpl.class);
 		
@@ -40,11 +41,16 @@ public class DispatcherImpl implements Dispatcher, RealTimeOperations{
 			String message = "DispatcherImpl constructor: connector can't be null.";
 			logger.error(message);
 			throw new IllegalArgumentException(message);
+		}else if(dateTimeSource == null){
+			String message = "DispatcherImpl constructor: dateTimeSource can't be null.";
+			logger.error(message);
+			throw new IllegalArgumentException(message);
 		}
 		
 		this.objectManager = objectManager;
 		this.saver = saver;
 		this.connector = connector;
+		this.dateTimeSource = dateTimeSource;
 		sentDate = LocalDate.MIN;
 	}
 
@@ -53,6 +59,7 @@ public class DispatcherImpl implements Dispatcher, RealTimeOperations{
 		if(parameters == null){
 			logger.warn("Received null parameters.");
 		}else if(tryToRecognizeAndRegisterObject(parameters)){
+			dateTimeSource.updateObjectsDateTime(parameters);
 			logger.info("Received: {} from power object#{}.",
 					parameters.getClass().getSimpleName(), parameters.getPowerObjectId());
 			return true;
@@ -73,6 +80,7 @@ public class DispatcherImpl implements Dispatcher, RealTimeOperations{
 			logger.warn("Received null state.");
 		}else if(isObjectRegistered(state)){
 			savePowerObjectState(state);
+			dateTimeSource.updateObjectsDateTime(state);
 			logger.info("Received: {} from power object#{}.",
 					state.getClass().getSimpleName(), state.getPowerObjectId());
 		}else{
@@ -100,7 +108,7 @@ public class DispatcherImpl implements Dispatcher, RealTimeOperations{
 	}
 	
 	private void getDateTimeInSimulation(){
-		dateTimeInSimulation = connector.getDateTimeInSimulation();
+		dateTimeInSimulation = dateTimeSource.getPowerObjectsDateTime();
 	}
 	
 	private boolean isItTimeToSendStationGenerationSchedules(){
@@ -129,6 +137,7 @@ public class DispatcherImpl implements Dispatcher, RealTimeOperations{
 	private void sendSchedules(){
 		for(PowerStationGenerationSchedule generationSchedule: schedules){
 			connector.sendCommand(generationSchedule);
+			logger.info("Sent: schedule {}.", generationSchedule);
 		}
 	}
 	

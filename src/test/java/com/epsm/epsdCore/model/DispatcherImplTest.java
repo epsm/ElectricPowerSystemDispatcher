@@ -27,6 +27,7 @@ public class DispatcherImplTest {
 	private PowerObjectManagerStub objectManager;
 	private StateSaver saver;
 	private ObjectsConnector connector;
+	private PowerObjectsDateTimeSource dateTimeSource;
 	private DispatcherImpl dispatcher;
 	private Parameters parameters;
 	private State state;
@@ -38,7 +39,8 @@ public class DispatcherImplTest {
 		objectManager = mock(PowerObjectManagerStub.class);
 		saver = mock(StateSaver.class);
 		connector = mock(ObjectsConnector.class);
-		dispatcher = new DispatcherImpl(objectManager, saver, connector);
+		dateTimeSource = mock(PowerObjectsDateTimeSource.class);
+		dispatcher = new DispatcherImpl(objectManager, saver, connector, dateTimeSource);
 		parameters = mock(PowerStationParameters.class);
 		state = new ConsumerState(OBJECT_ID, LocalDateTime.MIN, LocalDateTime.MIN, 100);
 		generationSchedule = mock(PowerStationGenerationSchedule.class);
@@ -57,7 +59,7 @@ public class DispatcherImplTest {
 		expectedEx.expect(IllegalArgumentException.class);
 	    expectedEx.expectMessage("DispatcherImpl constructor: objectManager can't be null.");
 		
-		new DispatcherImpl(null, saver, connector);
+		new DispatcherImpl(null, saver, connector, dateTimeSource);
 	}
 	
 	@Test
@@ -65,7 +67,7 @@ public class DispatcherImplTest {
 		expectedEx.expect(IllegalArgumentException.class);
 	    expectedEx.expectMessage("DispatcherImpl constructor: saver can't be null.");
 		
-		new DispatcherImpl(objectManager, null, connector);
+		new DispatcherImpl(objectManager, null, connector, dateTimeSource);
 	}
 	
 	@Test
@@ -73,7 +75,15 @@ public class DispatcherImplTest {
 		expectedEx.expect(IllegalArgumentException.class);
 	    expectedEx.expectMessage("DispatcherImpl constructor: connector can't be null.");
 		
-		new DispatcherImpl(objectManager, saver, null);
+		new DispatcherImpl(objectManager, saver, null, dateTimeSource);
+	}
+	
+	@Test
+	public void exceptionInConstructorIfDateTimeSourceIsNull(){
+		expectedEx.expect(IllegalArgumentException.class);
+	    expectedEx.expectMessage("DispatcherImpl constructor: dateTimeSource can't be null.");
+		
+		new DispatcherImpl(objectManager, saver, connector, null);
 	}
 	
 	@Test
@@ -144,11 +154,11 @@ public class DispatcherImplTest {
 	
 	@Test
 	public void retrievesSimulationTimeFromObjectsConnectorIfDoRealTimeOperationsInvoked(){
-		when(connector.getDateTimeInSimulation()).thenReturn(LocalDateTime.MIN);
+		when(dateTimeSource.getPowerObjectsDateTime()).thenReturn(LocalDateTime.MIN);
 		
 		dispatcher.doRealTimeDependingOperations();
 		
-		verify(connector).getDateTimeInSimulation();
+		verify(dateTimeSource).getPowerObjectsDateTime();
 	}
 	
 	@Test
@@ -161,7 +171,7 @@ public class DispatcherImplTest {
 	}
 	
 	private void makeTimeToSendSchedule(){
-		when(connector.getDateTimeInSimulation()).thenReturn(LocalDateTime.MAX);
+		when(dateTimeSource.getPowerObjectsDateTime()).thenReturn(LocalDateTime.MAX);
 	}
 	
 	@Test
@@ -174,7 +184,7 @@ public class DispatcherImplTest {
 	}
 	
 	private void makeTimeNotToSendSchedule(){
-		when(connector.getDateTimeInSimulation()).thenReturn(LocalDateTime.MIN);
+		when(dateTimeSource.getPowerObjectsDateTime()).thenReturn(LocalDateTime.MIN);
 	}
 	
 	@Test
@@ -208,6 +218,6 @@ public class DispatcherImplTest {
 		LocalDate date = LocalDate.MAX;
 		LocalTime time = Constants.HOUR_TO_SEND_MESSAGE.minusNanos(1);
 		
-		when(connector.getDateTimeInSimulation()).thenReturn(LocalDateTime.of(date, time));
+		when(dateTimeSource.getPowerObjectsDateTime()).thenReturn(LocalDateTime.of(date, time));
 	}
 }

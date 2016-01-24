@@ -13,12 +13,14 @@ public class DispatcherFactoryTest {
 	private StateSaver saver;
 	private ObjectsConnector connector;
 	private TimeService timeService;
+	private PowerObjectsDateTimeSource dateTimeSource;
 	
 	@Before
 	public void setUp(){
 		timeService = mock(TimeService.class);
 		saver = mock(StateSaver.class);
 		connector = mock(ObjectsConnector.class);
+		dateTimeSource = mock(PowerObjectsDateTimeSource.class);
 	}
 	
 	@Rule
@@ -29,7 +31,7 @@ public class DispatcherFactoryTest {
 		expectedEx.expect(IllegalArgumentException.class);
 	    expectedEx.expectMessage("DispatcherFactory constructor: timeService must not be null.");
 	    
-		new DispatcherFactory(null, saver, connector);
+		new DispatcherFactory(null, saver, connector, dateTimeSource);
 	}
 	
 	@Test
@@ -37,7 +39,7 @@ public class DispatcherFactoryTest {
 		expectedEx.expect(IllegalArgumentException.class);
 	    expectedEx.expectMessage("DispatcherFactory constructor: saver must not be null.");
 		
-		new DispatcherFactory(timeService, null, connector);
+		new DispatcherFactory(timeService, null, connector, dateTimeSource);
 	}
 	
 	@Test
@@ -45,6 +47,14 @@ public class DispatcherFactoryTest {
 		expectedEx.expect(IllegalArgumentException.class);
 	    expectedEx.expectMessage("DispatcherFactory constructor: connector must not be null.");
 		
-		new DispatcherFactory(timeService, saver, null);
+		new DispatcherFactory(timeService, saver, null, dateTimeSource);
+	}
+	
+	@Test
+	public void exceptionInConstructorIfDateTimeSourceIsNull(){
+		expectedEx.expect(IllegalArgumentException.class);
+	    expectedEx.expectMessage("DispatcherFactory constructor: dateTimeSource must not be null.");
+		
+		new DispatcherFactory(timeService, saver, connector, null);
 	}
 }
