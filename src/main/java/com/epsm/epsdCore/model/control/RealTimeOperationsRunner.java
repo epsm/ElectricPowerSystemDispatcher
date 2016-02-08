@@ -3,11 +3,11 @@ package com.epsm.epsdCore.model.control;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.epsm.epsdCore.model.Constants;
 import com.epsm.epsmCore.model.generalModel.RealTimeOperations;
 
 public class RealTimeOperationsRunner{
 	private RealTimeOperations object;
-	private final int PAUSE_BETWEEN_REAL_TIME_STEPS_IN_MS = 500;
 	private Logger logger;
 	
 	public void runDispatcher(RealTimeOperations object){
@@ -42,8 +42,8 @@ public class RealTimeOperationsRunner{
 			while(true){
 				object.doRealTimeDependingOperations();
 				
-				if(stepCounter++ > 10){
-					logger.debug("10 step performed.");
+				if(stepCounter++ > Constants.LOG_EVERY_REALTIME_STEPS){
+					logger.debug("{} step performed.", Constants.LOG_EVERY_REALTIME_STEPS);
 					resetCounter();
 				}
 				
@@ -56,9 +56,9 @@ public class RealTimeOperationsRunner{
 		}
 		
 		private void pause(){
-			if(PAUSE_BETWEEN_REAL_TIME_STEPS_IN_MS != 0){
+			if(Constants.PAUSE_BETWEEN_REAL_TIME_STEPS_IN_MS != 0){
 				try {
-					Thread.sleep(PAUSE_BETWEEN_REAL_TIME_STEPS_IN_MS);
+					Thread.sleep(Constants.PAUSE_BETWEEN_REAL_TIME_STEPS_IN_MS);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

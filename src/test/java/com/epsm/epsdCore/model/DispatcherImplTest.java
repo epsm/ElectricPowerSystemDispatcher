@@ -33,6 +33,8 @@ public class DispatcherImplTest {
 	private State state;
 	private PowerStationGenerationSchedule generationSchedule;
 	private final long OBJECT_ID = 6464;
+	private final LocalDateTime REAL_TIMESTAMP = LocalDateTime.MIN;
+	private final LocalDateTime SIMULATION_TIMESTAMP = LocalDateTime.MIN;
 	
 	@Before
 	public void setUp(){
@@ -42,7 +44,7 @@ public class DispatcherImplTest {
 		dateTimeSource = mock(PowerObjectsDateTimeSource.class);
 		dispatcher = new DispatcherImpl(objectManager, saver, connector, dateTimeSource);
 		parameters = mock(PowerStationParameters.class);
-		state = new ConsumerState(OBJECT_ID, LocalDateTime.MIN, LocalDateTime.MIN, 100);
+		state = new ConsumerState(OBJECT_ID, REAL_TIMESTAMP, SIMULATION_TIMESTAMP, 100);
 		generationSchedule = mock(PowerStationGenerationSchedule.class);
 		ArrayList<PowerStationGenerationSchedule> schedules = new ArrayList<PowerStationGenerationSchedule>();
 		
@@ -216,7 +218,7 @@ public class DispatcherImplTest {
 	
 	private void makeAppropriateDateButUnappropriateTime(){
 		LocalDate date = LocalDate.MAX;
-		LocalTime time = Constants.HOUR_TO_SEND_MESSAGE.minusNanos(1);
+		LocalTime time = Constants.TIME_TO_SEND_SCHEDULES.minusNanos(1);
 		
 		when(dateTimeSource.getPowerObjectsDateTime()).thenReturn(LocalDateTime.of(date, time));
 	}

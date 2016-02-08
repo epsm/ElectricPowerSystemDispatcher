@@ -24,6 +24,13 @@ public class PowerObjectManagerStubTest {
 	private PowerStationParameters powerStationParameters;
 	private ConsumerParametersStub consumerParameters;
 	private final int POWER_OBJECT_ID = 468;
+	private final LocalDateTime REAL_TIMESTAMP = LocalDateTime.MIN;
+	private final LocalDateTime SIMULATION_TIMESTAMP = LocalDateTime.MIN;
+	private final int QUANTITY_OF_GENERATORS = 2;
+	private final long STATION_1_ID = 10;
+	private final long STATION_2_ID = 30;
+	private final long CONSUMER_1_ID = 20;
+	private final long CONSUMER_2_ID = 40;
 	
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();
@@ -32,10 +39,11 @@ public class PowerObjectManagerStubTest {
 	public void setUp(){
 		timeService = new TimeService();
 		manager = spy(new PowerObjectManagerStub(timeService));
-		powerStationParameters = new PowerStationParameters(POWER_OBJECT_ID, LocalDateTime.MIN,
-				LocalDateTime.MIN, 2);
-		consumerParameters = new ConsumerParametersStub(POWER_OBJECT_ID, LocalDateTime.MIN,
-				LocalDateTime.MIN);
+		
+		powerStationParameters = new PowerStationParameters(
+				POWER_OBJECT_ID, REAL_TIMESTAMP, SIMULATION_TIMESTAMP, QUANTITY_OF_GENERATORS);
+		consumerParameters = new ConsumerParametersStub(
+				POWER_OBJECT_ID, REAL_TIMESTAMP, SIMULATION_TIMESTAMP);
 	}
 	
 	@Test
@@ -81,23 +89,24 @@ public class PowerObjectManagerStubTest {
 	
 	@Test
 	public void generatesSchedulesOnlyForPowerStations(){
+		final int REGISTERD_GENERATORS = 2;
 		registerTwoPowerStationAndTwoConsumers();
 		List<PowerStationGenerationSchedule> schedules = manager.getPowerStationGenerationSchedules();
 		
-		Assert.assertEquals(2, schedules.size());
-		Assert.assertEquals(10, schedules.get(0).getPowerObjectId());
-		Assert.assertEquals(30, schedules.get(1).getPowerObjectId());
+		Assert.assertEquals(REGISTERD_GENERATORS, schedules.size());
+		Assert.assertEquals(STATION_1_ID, schedules.get(0).getPowerObjectId());
+		Assert.assertEquals(STATION_2_ID, schedules.get(1).getPowerObjectId());
 	}
 	
 	private void registerTwoPowerStationAndTwoConsumers(){
 		Parameters stationParameters_1 = new PowerStationParameters(
-				10, LocalDateTime.MIN, LocalDateTime.MIN, 1);
+				STATION_1_ID, REAL_TIMESTAMP, SIMULATION_TIMESTAMP, QUANTITY_OF_GENERATORS);
 		Parameters stationParameters_2 = new PowerStationParameters(
-				30, LocalDateTime.MIN, LocalDateTime.MIN, 1);
+				STATION_2_ID, REAL_TIMESTAMP, SIMULATION_TIMESTAMP, QUANTITY_OF_GENERATORS);
 		Parameters consumerParameters_1 = new ConsumerParametersStub(
-				20, LocalDateTime.MIN, LocalDateTime.MIN);
+				CONSUMER_1_ID, REAL_TIMESTAMP, SIMULATION_TIMESTAMP);
 		Parameters consumerParameters_2 = new ConsumerParametersStub(
-				40, LocalDateTime.MIN, LocalDateTime.MIN);
+				CONSUMER_2_ID, REAL_TIMESTAMP, SIMULATION_TIMESTAMP);
 		
 		manager.registerObjectIfItTypeIsKnown(stationParameters_1);
 		manager.registerObjectIfItTypeIsKnown(consumerParameters_1);

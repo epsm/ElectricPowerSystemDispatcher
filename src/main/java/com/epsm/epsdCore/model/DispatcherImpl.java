@@ -122,7 +122,7 @@ public class DispatcherImpl implements Dispatcher, RealTimeOperations{
 	
 	private boolean isTimeAppropriate(){
 		LocalTime timeInSimulation = dateTimeInSimulation.toLocalTime();
-		return timeInSimulation.isAfter(Constants.HOUR_TO_SEND_MESSAGE);
+		return timeInSimulation.isAfter(Constants.TIME_TO_SEND_SCHEDULES);
 	}
 	
 	private void sendSchedulesForPowerStations(){
