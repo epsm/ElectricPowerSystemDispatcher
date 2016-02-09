@@ -1,34 +1,69 @@
 #Electric power system model
-###Общие данные для всего проекта
-Это простая модель выделенной электроэнергетической системы, состоящая из собственно модели и диспетчера. В модели моделируется работа оборудования электрической станции, участвующего в процессе поддержания частоты в энергосистеме и два вида потребителей нагрузки. Модель получает суточные графики генерации от диспетчера. Диспетчер расчитывает (на данный момент выдаёт заглушку) суточные графики генерации для электростанций в системе и получает от электростанций и потребителей мгновенные значения вырабатываемой и потребляемой мощности через заданные промежутки времени в модели. Приложение состоит из четырех пакетов [epsm-core](https://github.com/epsm/epsm-core), [epsm-web](https://github.com/epsm/epsm-web), [epsd-core](https://github.com/epsm/epsd-core) и [epsd-web](https://github.com/epsm/epsd-web). К каждому пакету прилагается описание. Приложение запущенно на двух серверах ([модель](http://model-epsm.rhcloud.com/) и [диспетчер](http://dispatcher-epsm.rhcloud.com/app/history)) взаимодействующих между собой с помощью обмена сообщениями в формате JSON и имеющих web-интерфейсы.
+###General data for the project
+This is the simple model of a dedicated electric power system. The model consist of two separate parts. There are model and dispatcher. In the model simulated working of power stations equipment, that participate in process of supporting the frequency in system.
+The model gets daily generation schedules from dispatcher. Dispatcher gets data from power stations, consumers and calculates (for now gives stub) daily generation schedules.
+
+Application consist of four packages, two models:
+
++ [epsm-core](https://github.com/epsm/epsm-core)
++ [epsd-core](https://github.com/epsm/epsd-core)
+
+and two wrappers for models that helps intarcting models using JSON. Also wrappers have web interfaces.
+
++ [epsd-web](https://github.com/epsm/epsd-web)
++ [epsm-web](https://github.com/epsm/epsm-web)
+
+
+Application launched on two servers on OpenShift:
+
++ [model](http://model-epsm.rhcloud.com/)
++ [dispatcher](http://dispatcher-epsm.rhcloud.com/app/history). 
+
+The total project size is more than 16,000 source lines of code.
+
+| technology       | [epsm-core](https://github.com/epsm/epsm-core) | [epsm-web](https://github.com/epsm/epsm-web) | [epsd-core](https://github.com/epsm/epsd-core) | [epsd-web](https://github.com/epsm/epsd-web)|
+|:-----------------|:---:|:---:|:---:|:---:|
+| Java core        | yes | yes | yes | yes |
+| Spring core      | no  | yes | no  | yes |
+| MySQL            | no  | no  | no  | yes |
+| JPA (Hibernate)  | no  | no  | no  | yes |
+| JSP              | no  | yes | no  | yes |
+| Spring webmvc    | no  | yes | no  | yes |
+| JSON (fasterxml) | yes | yes | no  | yes |
+| HTML, CSS        | no  | yes | no  | yes |
+| Spring security  | no  | no  | no  | yes |
+| SLF4J, Logback   | yes | yes | yes | yes |
+| Junit, Mockito   | yes | yes | yes | yes |
+| Power Mockito    | yes | yes | no  | no  |
+| Spring test      | no  | yes | no  | yes |
+| DbUnit           | no  | no  | no  | yes |
+| CI (Travis)      | [![Build Status](https://travis-ci.org/epsm/epsm-core.svg?branch=master)](https://travis-ci.org/epsm/epsm-core) | [![Build Status](https://travis-ci.org/epsm/epsm-web.svg?branch=master)](https://travis-ci.org/epsm/epsm-web) | [![Build Status](https://travis-ci.org/epsm/epsd-core.svg?branch=master)](https://travis-ci.org/epsm/epsd-core) | [![Build Status](https://travis-ci.org/epsm/epsd-web.svg?branch=master)](https://travis-ci.org/epsm/epsd-web) |
 
 ##epsd-core
-#### описание предметной области
-Для полного понимания необходимо сначала прочитать раздел описание предметной области пакета [epsm-core](https://github.com/epsm/epsm-core). 
-В задачи диспетчера входит расчёт таких суточных графиков генерации, чтоб поддерживались необходимые резервы первичного и вторичного регулирования. Также должен поддерживаться вращающийся резерв в нормированном количестве, но не менее самого крупного генератора на случай его аварийного отключения. Поскольку эта функциональность на данный момент не реализованна и диспетчер выдаёт только заранее расчитанное расписание (заглушку), более подробное описание приводиться пока не будет. Модель максимально проработанна в пакете [epsm-core](https://github.com/epsm/epsm-core).
+####subject area description
 
-#### особености реализации
-Здесь будут приведенны диаграммы классов и диаграммы последовательности c достаточной для понимания работы программы детализацией и дано описание работы программы.
+For understanding it's necessary to read subject area description chapter from [epsm-core](https://github.com/epsm/epsm-core) firstly. 
 
-+ диаграмма классов
+Dispatcher calculating daily schedules of generation, to support the required reserves primary and secondary control. Additionally a spinning reserve must be supported in a normalized quantity, but not less than the largest generator in the power system to prevent blackout if generator will be turned off emergency. Because this functionality is not currently implemented and the dispather gives only a pre-calculated schedule (stub), a more detailed description will not be shown. Non stub model see in the package [epsm-core](https://github.com/epsm/epsm-core).
+
+####realization
+Here will be given class and sequence diagrams with sufficient detalization for the understanding of the program details. Also description of the program will be provided.
+
++ class diagram
 ![dispatcher class diagram](https://cloud.githubusercontent.com/assets/16285736/12745887/662dc0c4-c9a4-11e5-92da-d79530c9506a.jpg)
 
-+диаграмма последовательности для процесса регистрации объекта и принятия его отчётов
++ sequence diagram for the processes of registration power objects and getting their orders.
 ![dispatcher sequence diagram 1](https://cloud.githubusercontent.com/assets/16285736/12758883/174cc85e-c9e7-11e5-8b20-5fd6eae31508.jpg)
 
-+диаграмма последовательности для процесса расчёта суточных графиков генерации для электростанций
++ sequence diagram for the processes of calculation daily generation schedules and sending them to power stations.
 ![dispatcher sequence diagram 2](https://cloud.githubusercontent.com/assets/16285736/12745888/662eccee-c9a4-11e5-8f4d-afbbef1da775.jpg)
 
-Словами: Перед тем, как объект сможет отправлять State и получать Command ему необходимо зарегистрироваться у диспетчера, отправив ему свои параметры. Каждый объект из симуляции через заданный промежуток времени в симуляции отправляет свой State диспетчеру. На данный момент объекты PowerStation могут получать суточные графики от диспетчера. Объекты подклассов класса Consumer также могут получать ConsumptionPermission, но пока никак на них не реагируют. Иерархию классов Message с помощью которых взаимодействуют диспетчер и модель см. раздел особенности реализации пакета [epsm-core](https://github.com/epsm/epsm-core).
+By words: Before an object can send and receive State Command, it must register with the dispatcher by sending it it's parameters. Each object from the simulation after a specified period of time in the simulation sends its State to the dispatcher. 
 
-Через заданный промежуток времени объект класса RealTimeOperationsRunner вызывает метод doRealTimeDependingOperations() интерфейса RealTimeOperations что заставляет объект класса DispatcherImpl расчитывать и отправлять суточные графики генерации всем зарегистрированным  объектам PowerStation.
+For now the objects PowerStation can get daily schedules from the dispatcher. 
 
-Диспетчер работает с объектами, состояния которых моделируются пакетом [epsm-core](https://github.com/epsm/epsm-core).
+Objects of subclasses of the Consumer can also get ConsumptionPermission, but still does not react on them.
 
-epsd-core используется как модель для пакета [epsd-web](https://github.com/epsm/epsd-web), который является веб-приложением. epsd-web взаимодействует с помощью JSON с [epsm-web](https://github.com/epsm/epsm-web) который также является веб-приложением.
-epsm-web кроме взаимодействия с диспетчером позволяет [посмотреть](http://model-epsm.rhcloud.com) состояние модели на текущий момент. epsd-web кроме взаимодействия с моделью позволяет [посмотреть](http://dispatcher-epsm.rhcloud.com/app/history) графики частоты, генерации и потребления за прошедшие сутки.
+The hierarchy of Message classes using which model and dispatcher interacts with each other see section realizatiom of the package implementation [epsm-core](https://github.com/epsm/epsm-core).
 
-#### технологии
-Java core, SLF4J, Logback, Junit, Mockito.
-
-Покрытие unit-тестами согласно EclEmma 85%.
+Unit-test coverage according to EclEmma is 85%.
