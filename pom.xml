@@ -13,6 +13,13 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		
@@ -35,11 +42,11 @@
 			<version>1.7.13</version>
 		</dependency>
 
-		<!-- epsm-core, installed to local repository -->	
+		<!-- epsm-core -->	
 		<dependency>
-			<groupId>com.epsm</groupId>
+			<groupId>com.github.epsm</groupId>
 			<artifactId>epsm-core</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>860d07118c826b1f0474ad88b020ce9848fd5eb9</version>
 		</dependency>
 		
 		<!-- Tests -->
