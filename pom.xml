@@ -12,6 +12,7 @@
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<spring.version>4.3.8.RELEASE</spring.version>
 	</properties>
 	
 	<repositories>
@@ -22,7 +23,20 @@
 	</repositories>
 
 	<dependencies>
-		
+
+		<!-- Spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
 		<!-- Logback -->	
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -44,9 +58,9 @@
 
 		<!-- epsm-core -->	
 		<dependency>
-			<groupId>com.github.epsm</groupId>
+			<groupId>com.epsm</groupId>
 			<artifactId>epsm-core</artifactId>
-			<version>860d07118c826b1f0474ad88b020ce9848fd5eb9</version>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		
 		<!-- Tests -->
